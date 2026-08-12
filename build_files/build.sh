@@ -66,7 +66,7 @@ setpriv --reuid=nobody --regid=nobody --clear-groups env \
     HOME=/tmp/hypr-verify \
     XDG_RUNTIME_DIR=/tmp/hypr-verify \
     Hyprland --verify-config -c /usr/share/hypr/hyprland.lua
-fuzzel --config=/etc/xdg/fuzzel/fuzzel.ini --check-config
+LC_ALL=C.UTF-8 fuzzel --config=/etc/xdg/fuzzel/fuzzel.ini --check-config
 jq empty /etc/xdg/waybar/config.jsonc
 bash -n \
     /usr/bin/ben-bazzite-hyprland-apply \
