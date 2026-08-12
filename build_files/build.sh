@@ -18,6 +18,13 @@ dnf5 --enable-repo=terra install -y ghostty
 dnf5 -y copr enable lionheartp/Hyprland
 dnf5 install -y \
     hyprland \
+    hyprland-guiutils \
+    waybar \
+    fuzzel \
+    pavucontrol \
+    blueman \
+    NetworkManager-applet \
+    wlogout \
     xdg-desktop-portal-hyprland
 dnf5 -y copr disable lionheartp/Hyprland
 
