@@ -23,7 +23,7 @@ dnf5 install -y \
     fuzzel \
     pavucontrol \
     blueman \
-    NetworkManager-applet \
+    network-manager-applet \
     wlogout \
     xdg-desktop-portal-hyprland
 dnf5 -y copr disable lionheartp/Hyprland
