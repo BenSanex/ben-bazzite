@@ -61,7 +61,8 @@ grep -q 'hyprland.start' /usr/share/hypr/hyprland.lua
 test -f /usr/share/backgrounds/ben-bazzite/aurora-glass.png
 test -f /etc/xdg/waybar/config.jsonc
 install -d -m 0700 -o nobody -g nobody /tmp/hypr-verify
-runuser -u nobody -- env \
+test -x /usr/bin/setpriv
+setpriv --reuid=nobody --regid=nobody --clear-groups env \
     HOME=/tmp/hypr-verify \
     XDG_RUNTIME_DIR=/tmp/hypr-verify \
     Hyprland --verify-config -c /usr/share/hypr/hyprland.lua
