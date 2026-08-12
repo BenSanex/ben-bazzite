@@ -56,7 +56,7 @@ chmod 0755 \
     /usr/bin/ben-bazzite-hyprland-apply \
     /usr/libexec/ben-bazzite/keybinds \
     /usr/libexec/ben-bazzite/screenshot
-grep -q 'hl.dsp.exec_cmd("ghostty")' /usr/share/hypr/hyprland.lua
+grep -q 'local terminal = "ghostty"' /usr/share/hypr/hyprland.lua
 grep -q 'hyprland.start' /usr/share/hypr/hyprland.lua
 test -f /usr/share/backgrounds/ben-bazzite/aurora-glass.png
 test -f /etc/xdg/waybar/config.jsonc
