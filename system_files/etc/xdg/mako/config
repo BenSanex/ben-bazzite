@@ -1,0 +1,24 @@
+font=Fira Code 11
+background-color=#0b1020ee
+text-color=#e6edf7ff
+border-color=#6ee7facc
+progress-color=over #9b7bffff
+border-size=2
+border-radius=14
+icons=1
+max-icon-size=48
+width=360
+height=140
+margin=12
+padding=14
+anchor=top-right
+default-timeout=5000
+ignore-timeout=0
+layer=overlay
+
+[urgency=low]
+border-color=#263353cc
+
+[urgency=high]
+border-color=#ff7a90ff
+default-timeout=0

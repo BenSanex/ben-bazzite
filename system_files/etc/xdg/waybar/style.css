@@ -1,0 +1,144 @@
+@define-color bg rgba(7, 11, 24, 0.88);
+@define-color surface rgba(17, 25, 48, 0.92);
+@define-color surface-hover rgba(32, 42, 68, 0.96);
+@define-color border rgba(110, 231, 250, 0.25);
+@define-color text #e6edf7;
+@define-color muted #aeb9d6;
+@define-color cyan #6ee7fa;
+@define-color violet #9b7bff;
+@define-color coral #ff7a90;
+
+* {
+  border: none;
+  border-radius: 0;
+  min-height: 0;
+  font-family: "Fira Code", "Symbols Nerd Font Mono", sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+window#waybar {
+  color: @text;
+  background: @bg;
+  border: 1px solid @border;
+  border-radius: 14px;
+}
+
+tooltip {
+  color: @text;
+  background: rgba(11, 16, 32, 0.97);
+  border: 1px solid rgba(155, 123, 255, 0.45);
+  border-radius: 12px;
+}
+
+tooltip label {
+  padding: 8px;
+}
+
+#custom-launcher,
+#workspaces,
+#window,
+#clock,
+#tray,
+#pulseaudio,
+#network,
+#bluetooth,
+#cpu,
+#memory,
+#battery,
+#idle_inhibitor,
+#custom-help,
+#custom-power {
+  margin: 4px 0;
+  padding: 0 11px;
+  background: @surface;
+  border-radius: 10px;
+}
+
+#custom-launcher {
+  margin-left: 4px;
+  padding: 0 14px;
+  color: @cyan;
+  font-size: 16px;
+}
+
+#workspaces {
+  padding: 0 5px;
+}
+
+#workspaces button {
+  min-width: 24px;
+  padding: 0 5px;
+  color: #657394;
+  background: transparent;
+  border-radius: 8px;
+  transition: all 160ms ease;
+}
+
+#workspaces button:hover {
+  color: @cyan;
+  background: @surface-hover;
+}
+
+#workspaces button.active {
+  color: @cyan;
+  background: rgba(110, 231, 250, 0.12);
+}
+
+#workspaces button.urgent {
+  color: @coral;
+}
+
+#window {
+  color: @muted;
+  font-weight: 500;
+}
+
+#clock {
+  color: @text;
+  border-bottom: 2px solid @violet;
+}
+
+#tray {
+  padding: 0 10px;
+}
+
+#pulseaudio.muted,
+#network.disconnected,
+#bluetooth.disabled {
+  color: #657394;
+}
+
+#battery.warning {
+  color: #ffd580;
+}
+
+#battery.critical {
+  color: @coral;
+}
+
+#idle_inhibitor.activated {
+  color: @coral;
+  background: rgba(255, 122, 144, 0.12);
+}
+
+#custom-power {
+  margin-right: 4px;
+  padding: 0 14px;
+  color: @coral;
+}
+
+#custom-help {
+  color: @violet;
+  font-size: 14px;
+}
+
+#custom-launcher:hover,
+#pulseaudio:hover,
+#network:hover,
+#bluetooth:hover,
+#idle_inhibitor:hover,
+#custom-help:hover,
+#custom-power:hover {
+  background: @surface-hover;
+}

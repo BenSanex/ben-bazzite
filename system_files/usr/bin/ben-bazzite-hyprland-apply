@@ -1,0 +1,23 @@
+#!/bin/bash
+set -eu
+
+source_config="/usr/share/hypr/hyprland.lua"
+config_root="${XDG_CONFIG_HOME:-${HOME}/.config}/hypr"
+target_config="${config_root}/hyprland.lua"
+
+mkdir -p "${config_root}"
+
+if [[ -f "${target_config}" ]]; then
+    if cmp -s "${source_config}" "${target_config}"; then
+        echo "Ben Bazzite Hyprland configuration is already active."
+        exit 0
+    fi
+
+    backup_config="${target_config}.backup-$(date +%Y%m%d-%H%M%S)"
+    cp --preserve=mode,timestamps "${target_config}" "${backup_config}"
+    echo "Backed up the existing configuration to ${backup_config}"
+fi
+
+install -m 0644 "${source_config}" "${target_config}"
+echo "Installed the Ben Bazzite Hyprland desktop configuration."
+echo "Log out and back into Hyprland once to start the complete session."

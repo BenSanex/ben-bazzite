@@ -1,0 +1,23 @@
+#!/bin/bash
+set -eu
+
+screenshot_dir="${XDG_PICTURES_DIR:-${HOME}/Pictures}/Screenshots"
+mkdir -p "${screenshot_dir}"
+screenshot_file="${screenshot_dir}/Screenshot-$(date +%Y%m%d-%H%M%S).png"
+
+case "${1:-region}" in
+    region)
+        geometry="$(slurp)" || exit 0
+        grim -g "${geometry}" "${screenshot_file}"
+        ;;
+    output)
+        grim "${screenshot_file}"
+        ;;
+    *)
+        echo "usage: $0 [region|output]" >&2
+        exit 2
+        ;;
+esac
+
+wl-copy < "${screenshot_file}"
+notify-send -a "Screenshot" "Screenshot copied" "Saved to ${screenshot_file}"

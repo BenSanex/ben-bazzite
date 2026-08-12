@@ -19,8 +19,15 @@ dnf5 -y copr enable lionheartp/Hyprland
 dnf5 install -y \
     hyprland \
     hyprland-guiutils \
+    hyprpaper \
+    hyprlock \
+    hypridle \
+    hyprpolkitagent \
+    hyprshutdown \
     waybar \
     fuzzel \
+    mako \
+    brightnessctl \
     pavucontrol \
     blueman \
     network-manager-applet \
@@ -31,6 +38,13 @@ dnf5 -y copr disable lionheartp/Hyprland
 # Fail the image build if the compositor, portal, or GDM session entry is lost.
 test -x /usr/bin/start-hyprland
 test -x /usr/bin/ghostty
+test -x /usr/bin/hyprpaper
+test -x /usr/bin/hyprlock
+test -x /usr/bin/hypridle
+test -x /usr/bin/hyprshutdown
+test -x /usr/bin/waybar
+test -x /usr/bin/fuzzel
+test -x /usr/bin/wlogout
 test -x /usr/libexec/xdg-desktop-portal-hyprland
 test -f /usr/share/wayland-sessions/hyprland.desktop
 grep -q '^Exec=/usr/bin/start-hyprland$' /usr/share/wayland-sessions/hyprland.desktop
@@ -38,7 +52,25 @@ grep -q '^Exec=/usr/bin/start-hyprland$' /usr/share/wayland-sessions/hyprland.de
 # Apply image-owned files after RPM installation so the maintained Ben Bazzite
 # fallback config replaces Hyprland's packaged example.
 cp -avf "/ctx/system_files"/. /
+chmod 0755 \
+    /usr/bin/ben-bazzite-hyprland-apply \
+    /usr/libexec/ben-bazzite/keybinds \
+    /usr/libexec/ben-bazzite/screenshot
 grep -q 'hl.dsp.exec_cmd("ghostty")' /usr/share/hypr/hyprland.lua
+grep -q 'hyprland.start' /usr/share/hypr/hyprland.lua
+test -f /usr/share/backgrounds/ben-bazzite/aurora-glass.png
+test -f /etc/xdg/waybar/config.jsonc
+install -d -m 0700 -o nobody -g nobody /tmp/hypr-verify
+runuser -u nobody -- env \
+    HOME=/tmp/hypr-verify \
+    XDG_RUNTIME_DIR=/tmp/hypr-verify \
+    Hyprland --verify-config -c /usr/share/hypr/hyprland.lua
+fuzzel --config=/etc/xdg/fuzzel/fuzzel.ini --check-config
+jq empty /etc/xdg/waybar/config.jsonc
+bash -n \
+    /usr/bin/ben-bazzite-hyprland-apply \
+    /usr/libexec/ben-bazzite/keybinds \
+    /usr/libexec/ben-bazzite/screenshot
 
 #### Example for enabling a System Unit File
 

@@ -1,0 +1,44 @@
+BEN BAZZITE — HYPRLAND SHORTCUTS
+
+APPS
+Super + D                 App launcher
+Super + Return            Terminal
+Super + E                 Files
+Super + F1                This shortcut guide
+
+WINDOWS
+Super + Q                 Close window
+Super + F                 Fullscreen
+Super + Space             Toggle floating
+Super + P                 Toggle pseudotile
+Super + Tab               Cycle windows
+Super + Arrow             Move focus
+Super + Shift + Arrow     Move window
+Super + Left Mouse        Drag window
+Super + Right Mouse       Resize window
+
+WORKSPACES
+Super + 1…9               Switch workspace
+Super + Shift + 1…9       Send window to workspace
+Super + Mouse Wheel       Cycle workspaces
+Super + S                 Toggle scratchpad
+Super + Shift + S         Send window to scratchpad
+
+SESSION
+Super + L                 Lock
+Super + Shift + E         Power/session menu
+
+SCREENSHOTS
+Print                     Select a region
+Shift + Print             Capture all outputs
+
+MEDIA
+Volume/Brightness keys    Adjust volume or brightness
+Play/Next/Previous keys   Control media playback
+
+WAYBAR
+Click the Fedora icon     App launcher
+Click audio/network/BT    Open its control panel
+Click the moon icon       Prevent/allow idle sleep
+Click ?                   This guide
+Click power               Power/session menu

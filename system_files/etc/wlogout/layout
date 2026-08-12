@@ -1,0 +1,36 @@
+{
+  "label" : "lock",
+  "action" : "hyprlock -c /usr/share/hypr/hyprlock.conf",
+  "text" : "Lock",
+  "keybind" : "l"
+}
+{
+  "label" : "logout",
+  "action" : "hyprshutdown",
+  "text" : "Log out",
+  "keybind" : "e"
+}
+{
+  "label" : "suspend",
+  "action" : "systemctl suspend",
+  "text" : "Suspend",
+  "keybind" : "s"
+}
+{
+  "label" : "hibernate",
+  "action" : "systemctl hibernate",
+  "text" : "Hibernate",
+  "keybind" : "h"
+}
+{
+  "label" : "reboot",
+  "action" : "hyprshutdown -t 'Restarting…' --post-cmd 'systemctl reboot'",
+  "text" : "Reboot",
+  "keybind" : "r"
+}
+{
+  "label" : "shutdown",
+  "action" : "hyprshutdown -t 'Shutting down…' --post-cmd 'systemctl poweroff'",
+  "text" : "Shut down",
+  "keybind" : "p"
+}
