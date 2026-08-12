@@ -17,14 +17,20 @@ hl.env("LIBVA_DRIVER_NAME", "nvidia")
 hl.env("__GLX_VENDOR_LIBRARY_NAME", "nvidia")
 hl.env("XCURSOR_SIZE", "24")
 hl.env("HYPRCURSOR_SIZE", "24")
+-- Adwaita's built-in dark variant works for both classic GTK applications and
+-- modern GTK 4/libadwaita applications such as Files and Zenity.
+hl.env("GTK_THEME", "Adwaita:dark")
+-- Let Qt applications inherit the same GTK colors instead of falling back to
+-- a bright Fusion theme.
+hl.env("QT_QPA_PLATFORMTHEME", "gtk3")
 
 hl.config({
     general = {
         layout = "dwindle",
         border_size = 2,
-        gaps_in = 7,
-        gaps_out = 14,
-        gaps_workspaces = 18,
+        gaps_in = 5,
+        gaps_out = 9,
+        gaps_workspaces = 12,
         resize_on_border = true,
         allow_tearing = false,
         ["col.active_border"] = {
@@ -109,9 +115,11 @@ hl.layer_rule({ match = { namespace = "waybar" }, blur = true })
 hl.layer_rule({ match = { namespace = "launcher" }, blur = true })
 
 hl.on("hyprland.start", function()
+    hl.exec_cmd("/usr/libexec/ben-bazzite/dark-theme")
     hl.exec_cmd("hyprpaper -c /usr/share/hypr/hyprpaper.conf")
     hl.exec_cmd("waybar")
     hl.exec_cmd("mako --config /etc/xdg/mako/config")
+    hl.exec_cmd("swayosd-server")
     hl.exec_cmd("nm-applet --indicator")
     hl.exec_cmd("blueman-applet")
     hl.exec_cmd("hypridle -c /usr/share/hypr/hypridle.conf")
@@ -121,7 +129,7 @@ end)
 -- Apps and session controls.
 hl.bind("SUPER + Return", hl.dsp.exec_cmd(terminal))
 hl.bind("SUPER + D", hl.dsp.exec_cmd(launcher))
-hl.bind("SUPER + E", hl.dsp.exec_cmd("nautilus --new-window"))
+hl.bind("SUPER + E", hl.dsp.exec_cmd("env GTK_THEME=Adwaita:dark nautilus --new-window"))
 hl.bind("SUPER + F1", hl.dsp.exec_cmd("/usr/libexec/ben-bazzite/keybinds"))
 hl.bind("SUPER + L", hl.dsp.exec_cmd("hyprlock -c /usr/share/hypr/hyprlock.conf"))
 hl.bind("SUPER + SHIFT + E", hl.dsp.exec_cmd("wlogout"))
@@ -156,12 +164,12 @@ end
 -- Screenshots, audio, brightness, and media keys.
 hl.bind("Print", hl.dsp.exec_cmd("/usr/libexec/ben-bazzite/screenshot region"))
 hl.bind("SHIFT + Print", hl.dsp.exec_cmd("/usr/libexec/ben-bazzite/screenshot output"))
-hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd("wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 5%+"), { locked = true, repeating = true })
-hl.bind("XF86AudioLowerVolume", hl.dsp.exec_cmd("wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"), { locked = true, repeating = true })
-hl.bind("XF86AudioMute", hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"), { locked = true })
-hl.bind("XF86AudioMicMute", hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"), { locked = true })
-hl.bind("XF86MonBrightnessUp", hl.dsp.exec_cmd("brightnessctl -e4 -n2 set 5%+"), { locked = true, repeating = true })
-hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd("brightnessctl -e4 -n2 set 5%-"), { locked = true, repeating = true })
+hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd("swayosd-client --output-volume +5 --max-volume 100"), { locked = true, repeating = true })
+hl.bind("XF86AudioLowerVolume", hl.dsp.exec_cmd("swayosd-client --output-volume -5 --max-volume 100"), { locked = true, repeating = true })
+hl.bind("XF86AudioMute", hl.dsp.exec_cmd("swayosd-client --output-volume mute-toggle"), { locked = true })
+hl.bind("XF86AudioMicMute", hl.dsp.exec_cmd("swayosd-client --input-volume mute-toggle"), { locked = true })
+hl.bind("XF86MonBrightnessUp", hl.dsp.exec_cmd("swayosd-client --brightness +5"), { locked = true, repeating = true })
+hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd("swayosd-client --brightness -5"), { locked = true, repeating = true })
 hl.bind("XF86AudioPlay", hl.dsp.exec_cmd("playerctl play-pause"), { locked = true })
 hl.bind("XF86AudioPause", hl.dsp.exec_cmd("playerctl play-pause"), { locked = true })
 hl.bind("XF86AudioNext", hl.dsp.exec_cmd("playerctl next"), { locked = true })

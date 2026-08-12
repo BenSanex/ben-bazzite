@@ -1,0 +1,26 @@
+#!/bin/bash
+set -u
+
+clients="$(hyprctl -j clients 2>/dev/null || printf '[]')"
+count="$(jq '[.[] | select(.workspace.name == "special:scratch")] | length' \
+    <<<"${clients}" 2>/dev/null || printf '0')"
+
+if ((count == 0)); then
+    printf '{"text":"","tooltip":"Scratchpad empty","class":"empty"}\n'
+    exit 0
+fi
+
+class="occupied"
+if hyprctl -j monitors 2>/dev/null \
+    | jq -e 'any(.[]; .specialWorkspace.name == "special:scratch")' >/dev/null 2>&1; then
+    class="visible"
+fi
+
+label="windows"
+if ((count == 1)); then
+    label="window"
+fi
+
+printf \
+    '{"text":" %d","tooltip":"Scratchpad • %d %s • Super+S","class":"%s"}\n' \
+    "${count}" "${count}" "${label}" "${class}"

@@ -1,0 +1,33 @@
+#!/bin/bash
+# Keep toolkit applications aligned with the image's dark cyberpunk shell.
+# These calls are idempotent and intentionally run in the graphical session,
+# where the user's dconf database and session bus are available.
+set -u
+
+schema="org.gnome.desktop.interface"
+config_home="${XDG_CONFIG_HOME:-${HOME}/.config}"
+ghostty_source="/etc/xdg/ghostty/config"
+ghostty_target="${config_home}/ghostty/config"
+
+# Ghostty only reads its user config directory. Seed our palette on first use,
+# while leaving an existing user configuration completely untouched.
+if [[ ! -e "${ghostty_target}" ]]; then
+    install -d -m 0700 "${config_home}/ghostty"
+    install -m 0600 "${ghostty_source}" "${ghostty_target}"
+fi
+
+gsettings set "${schema}" color-scheme 'prefer-dark' 2>/dev/null || :
+gsettings set "${schema}" gtk-theme 'adw-gtk3-dark' 2>/dev/null || :
+gsettings set "${schema}" font-name 'Roboto 11' 2>/dev/null || :
+gsettings set "${schema}" document-font-name 'Roboto 11' 2>/dev/null || :
+
+# GNOME 47+ supports system accents. Purple is the closest native accent to
+# the violet used throughout the Ben Bazzite shell.
+if gsettings list-keys "${schema}" | grep -qx 'accent-color'; then
+    gsettings set "${schema}" accent-color 'purple' 2>/dev/null || :
+fi
+
+# D-Bus-activated applications do not necessarily inherit Hyprland's process
+# environment. Refresh the activation environment so Files gets the same dark
+# preference even when it is started through the session bus.
+dbus-update-activation-environment --systemd GTK_THEME QT_QPA_PLATFORMTHEME 2>/dev/null || :

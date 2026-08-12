@@ -1,0 +1,29 @@
+# Ben Bazzite cyberpunk terminal palette.
+font-family = Fira Code
+font-size = 12
+background = 0b1020
+foreground = e6edf7
+cursor-color = 6ee7fa
+cursor-text = 0b1020
+selection-background = 263353
+selection-foreground = ffffff
+window-padding-x = 12
+window-padding-y = 10
+window-padding-balance = true
+
+palette = 0=111930
+palette = 1=ff7a90
+palette = 2=78e6a7
+palette = 3=ffd580
+palette = 4=70a5ff
+palette = 5=9b7bff
+palette = 6=6ee7fa
+palette = 7=e6edf7
+palette = 8=657394
+palette = 9=ff98a8
+palette = 10=9aefbd
+palette = 11=ffe29e
+palette = 12=91bbff
+palette = 13=b29aff
+palette = 14=9bf0fb
+palette = 15=ffffff

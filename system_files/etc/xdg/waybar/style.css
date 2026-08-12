@@ -12,7 +12,7 @@
   border: none;
   border-radius: 0;
   min-height: 0;
-  font-family: "Fira Code", "Symbols Nerd Font Mono", sans-serif;
+  font-family: "Roboto", "Symbols Nerd Font Mono", sans-serif;
   font-size: 12px;
   font-weight: 600;
 }
@@ -36,9 +36,15 @@ tooltip label {
 }
 
 #custom-launcher,
+#custom-browser,
+#custom-files,
+#custom-terminal,
 #workspaces,
+#custom-scratchpad,
 #window,
+#mpris,
 #clock,
+#privacy,
 #tray,
 #pulseaudio,
 #network,
@@ -60,6 +66,25 @@ tooltip label {
   padding: 0 14px;
   color: @cyan;
   font-size: 16px;
+}
+
+#custom-browser,
+#custom-files,
+#custom-terminal {
+  padding: 0 12px;
+  font-size: 14px;
+}
+
+#custom-browser {
+  color: @coral;
+}
+
+#custom-files {
+  color: @violet;
+}
+
+#custom-terminal {
+  color: @cyan;
 }
 
 #workspaces {
@@ -89,9 +114,45 @@ tooltip label {
   color: @coral;
 }
 
+#custom-scratchpad {
+  color: @violet;
+}
+
+#custom-scratchpad.visible {
+  color: @cyan;
+  background: rgba(110, 231, 250, 0.12);
+}
+
+#custom-scratchpad.empty {
+  margin: 0;
+  padding: 0;
+  background: transparent;
+}
+
 #window {
   color: @muted;
   font-weight: 500;
+}
+
+#mpris {
+  color: @cyan;
+  font-weight: 500;
+}
+
+#mpris.paused {
+  color: @muted;
+}
+
+#privacy {
+  padding: 0 9px;
+}
+
+#privacy-item.screenshare {
+  color: @violet;
+}
+
+#privacy-item.audio-in {
+  color: @coral;
 }
 
 #clock {
@@ -134,6 +195,11 @@ tooltip label {
 }
 
 #custom-launcher:hover,
+#custom-browser:hover,
+#custom-files:hover,
+#custom-terminal:hover,
+#custom-scratchpad:hover,
+#mpris:hover,
 #pulseaudio:hover,
 #network:hover,
 #bluetooth:hover,

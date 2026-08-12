@@ -1,5 +1,5 @@
 #!/bin/bash
-exec zenity --text-info \
+exec env GTK_THEME=Adwaita:dark zenity --text-info \
     --title="Ben Bazzite shortcuts" \
     --width=620 \
     --height=650 \

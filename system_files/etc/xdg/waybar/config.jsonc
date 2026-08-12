@@ -10,11 +10,16 @@
 
   "modules-left": [
     "custom/launcher",
+    "custom/browser",
+    "custom/files",
+    "custom/terminal",
     "hyprland/workspaces",
+    "custom/scratchpad",
     "hyprland/window"
   ],
-  "modules-center": ["clock"],
+  "modules-center": ["mpris", "clock"],
   "modules-right": [
+    "privacy",
     "tray",
     "pulseaudio",
     "network",
@@ -32,6 +37,21 @@
     "tooltip-format": "Launch apps  •  Super+D",
     "on-click": "fuzzel"
   },
+  "custom/browser": {
+    "format": "",
+    "tooltip-format": "Firefox",
+    "on-click": "gtk-launch org.mozilla.firefox"
+  },
+  "custom/files": {
+    "format": "",
+    "tooltip-format": "Files",
+    "on-click": "gtk-launch org.gnome.Nautilus"
+  },
+  "custom/terminal": {
+    "format": "",
+    "tooltip-format": "Terminal",
+    "on-click": "gtk-launch com.mitchellh.ghostty"
+  },
   "hyprland/workspaces": {
     "active-only": false,
     "all-outputs": false,
@@ -40,14 +60,14 @@
       "active": "",
       "default": "",
       "urgent": ""
-    },
-    "persistent-workspaces": {
-      "1": [],
-      "2": [],
-      "3": [],
-      "4": [],
-      "5": []
     }
+  },
+  "custom/scratchpad": {
+    "exec": "/usr/libexec/ben-bazzite/scratchpad-status",
+    "return-type": "json",
+    "interval": 1,
+    "format": "{text}",
+    "on-click": "hyprctl dispatch togglespecialworkspace scratch"
   },
   "hyprland/window": {
     "format": "{title}",
@@ -56,6 +76,23 @@
     "rewrite": {
       "": "Desktop"
     }
+  },
+  "mpris": {
+    "format": "{status_icon} {dynamic}",
+    "format-paused": "{status_icon} {dynamic}",
+    "format-stopped": "",
+    "dynamic-order": ["title", "artist"],
+    "dynamic-separator": " • ",
+    "dynamic-len": 34,
+    "title-len": 24,
+    "artist-len": 18,
+    "album-len": 0,
+    "status-icons": {
+      "playing": "",
+      "paused": "",
+      "stopped": ""
+    },
+    "tooltip-format": "{player}\n{title}\n{artist} • {album}"
   },
   "clock": {
     "interval": 1,
@@ -74,6 +111,23 @@
         "today": "<span color='#ff7a90'><b><u>{}</u></b></span>"
       }
     }
+  },
+  "privacy": {
+    "icon-spacing": 7,
+    "icon-size": 17,
+    "transition-duration": 180,
+    "modules": [
+      {
+        "type": "screenshare",
+        "tooltip": true,
+        "tooltip-icon-size": 22
+      },
+      {
+        "type": "audio-in",
+        "tooltip": true,
+        "tooltip-icon-size": 22
+      }
+    ]
   },
   "tray": {
     "icon-size": 17,

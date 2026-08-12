@@ -1,0 +1,6 @@
+[org/gnome/desktop/interface]
+color-scheme='prefer-dark'
+gtk-theme='adw-gtk3-dark'
+accent-color='purple'
+font-name='Roboto 11'
+document-font-name='Roboto 11'
