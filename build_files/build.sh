@@ -60,7 +60,7 @@ test -x /usr/bin/gnome-session
 test -x /usr/bin/gnome-control-center
 test -x /usr/bin/dms
 test -x /usr/bin/qs
-grep -Fq 'return "CPU " + value.toFixed(0) + "%";' \
+grep -Fq '"CPU " + value.toFixed(0) + "%";' \
     /usr/share/quickshell/dms/Modules/Plugins/BasePill.qml
 grep -Fq 'item.widgetId = widgetId;' \
     /usr/share/quickshell/dms/Modules/DankBar/WidgetHost.qml
