@@ -76,6 +76,7 @@ chmod 0755 \
     /usr/bin/ben-bazzite-hyprland-apply \
     /usr/libexec/ben-bazzite/dark-theme \
     /usr/libexec/ben-bazzite/keybinds \
+    /usr/libexec/ben-bazzite/session-start \
     /usr/libexec/ben-bazzite/scratchpad-status \
     /usr/libexec/ben-bazzite/screenshot
 grep -q 'local terminal = "ghostty"' /usr/share/hypr/hyprland.lua
@@ -88,6 +89,7 @@ test -f /etc/xdg/gtk-4.0/settings.ini
 test -f /etc/xdg/ghostty/config
 test -f /etc/xdg/xdg-desktop-portal/hyprland-portals.conf
 test -f /etc/dconf/profile/user
+test -f /usr/lib/systemd/user/ben-bazzite-hyprland-session.target
 test -f /usr/share/themes/adw-gtk3-dark/index.theme
 test ! -e /etc/dconf/profile/gdm
 grep -Fxq 'file-db:/usr/share/gdm/greeter-dconf-defaults' \
@@ -120,6 +122,7 @@ bash -n \
     /usr/bin/ben-bazzite-hyprland-apply \
     /usr/libexec/ben-bazzite/dark-theme \
     /usr/libexec/ben-bazzite/keybinds \
+    /usr/libexec/ben-bazzite/session-start \
     /usr/libexec/ben-bazzite/scratchpad-status \
     /usr/libexec/ben-bazzite/screenshot
 

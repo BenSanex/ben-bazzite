@@ -1,0 +1,16 @@
+#!/bin/bash
+# Connect this compositor-owned session to systemd's graphical session.
+# Portals and other desktop services use graphical-session.target as their
+# lifecycle boundary and receive the compositor environment through systemd.
+set -eu
+
+dbus-update-activation-environment --systemd \
+    DISPLAY \
+    HYPRLAND_INSTANCE_SIGNATURE \
+    WAYLAND_DISPLAY \
+    XCURSOR_SIZE \
+    XDG_CURRENT_DESKTOP \
+    XDG_SESSION_DESKTOP \
+    XDG_SESSION_TYPE
+
+systemctl --user start ben-bazzite-hyprland-session.target

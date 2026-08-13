@@ -115,6 +115,7 @@ hl.layer_rule({ match = { namespace = "waybar" }, blur = true })
 hl.layer_rule({ match = { namespace = "launcher" }, blur = true })
 
 hl.on("hyprland.start", function()
+    hl.exec_cmd("/usr/libexec/ben-bazzite/session-start")
     hl.exec_cmd("/usr/libexec/ben-bazzite/dark-theme")
     hl.exec_cmd("hyprpaper -c /usr/share/hypr/hyprpaper.conf")
     hl.exec_cmd("waybar")
