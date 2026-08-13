@@ -5,9 +5,11 @@
 set -u
 
 state_root="${XDG_STATE_HOME:-${HOME}/.local/state}/ben-bazzite"
-theme_marker="${state_root}/dms-theme-v1"
+config_root="${XDG_CONFIG_HOME:-${HOME}/.config}/DankMaterialShell"
+theme_marker="${state_root}/dms-desktop-v2"
 theme_file="/usr/share/ben-bazzite/dms-theme.json"
 wallpaper="/usr/share/backgrounds/ben-bazzite/aurora-glass.png"
+settings_file="${config_root}/settings.json"
 
 if ! dms run -d; then
     notify-send \
@@ -19,22 +21,140 @@ if ! dms run -d; then
     exit 1
 fi
 
-if [[ -e "${theme_marker}" ]]; then
-    exit 0
-fi
+if [[ ! -e "${theme_marker}" ]]; then
+    install -d -m 0700 "${state_root}"
 
-install -d -m 0700 "${state_root}"
+    # Wait for DMS to finish loading its persisted settings before changing
+    # them. Setting values merely when the IPC socket appears is too early:
+    # the settings file can load afterward and replace them with defaults.
+    for _ in {1..100}; do
+        if dms ipc call settings get barConfigs >/dev/null 2>&1; then
+            sleep 1
+            break
+        fi
+        sleep 0.1
+    done
 
-for _ in {1..50}; do
+    bar_config="$(jq -cn '[{
+        id: "default",
+        name: "Ben OS Glass",
+        enabled: true,
+        position: 0,
+        screenPreferences: ["all"],
+        showOnLastDisplay: true,
+        leftWidgets: ["launcherButton", "workspaceSwitcher", "focusedWindow"],
+        centerWidgets: ["music", "clock", "weather"],
+        rightWidgets: ["privacyIndicator", "systemTray", "clipboard", "cpuUsage",
+            "memUsage", "notificationButton", "battery", "idleInhibitor",
+            "benOsHelp", "powerMenuButton", "controlCenterButton"],
+        spacing: 6,
+        innerPadding: 4,
+        barInsetPadding: 10,
+        bottomGap: 8,
+        transparency: 0.72,
+        widgetTransparency: 0.42,
+        squareCorners: false,
+        noBackground: false,
+        maximizeWidgetIcons: false,
+        maximizeWidgetText: false,
+        removeWidgetPadding: false,
+        widgetPadding: 8,
+        gothCornersEnabled: false,
+        borderEnabled: true,
+        borderColor: "primary",
+        borderOpacity: 0.30,
+        borderThickness: 1,
+        widgetOutlineEnabled: true,
+        widgetOutlineColor: "secondary",
+        widgetOutlineOpacity: 0.16,
+        widgetOutlineThickness: 1,
+        fontScale: 1.0,
+        iconScale: 1.0,
+        autoHide: false,
+        visible: true,
+        popupGapsAuto: false,
+        popupGapsManual: 10,
+        maximizeDetection: true,
+        useOverlayLayer: false,
+        scrollEnabled: true,
+        scrollXBehavior: "column",
+        scrollYBehavior: "workspace",
+        shadowIntensity: 16,
+        shadowOpacity: 38,
+        shadowColorMode: "custom",
+        shadowCustomColor: "#050713",
+        clickThrough: false,
+        hoverPopouts: true,
+        hoverPopoutDelay: 220
+    }]')"
+
     if dms ipc call settings set customThemeFile "${theme_file}" >/dev/null 2>&1 \
         && dms ipc call settings set currentThemeName custom >/dev/null 2>&1 \
-        && dms ipc call wallpaper set "${wallpaper}" >/dev/null 2>&1; then
+        && dms ipc call settings set widgetBackgroundColor custom >/dev/null 2>&1 \
+        && dms ipc call settings set widgetBackgroundCustomColor '#111930' >/dev/null 2>&1 \
+        && dms ipc call settings set widgetBackgroundCustomStrength 0.72 >/dev/null 2>&1 \
+        && dms ipc call settings set popupTransparency 0.82 >/dev/null 2>&1 \
+        && dms ipc call settings set blurEnabled true >/dev/null 2>&1 \
+        && dms ipc call settings set blurForegroundLayers false >/dev/null 2>&1 \
+        && dms ipc call settings set blurLayerOutlineOpacity 0.18 >/dev/null 2>&1 \
+        && dms ipc call settings set blurBorderEnabled true >/dev/null 2>&1 \
+        && dms ipc call settings set blurBorderColor primary >/dev/null 2>&1 \
+        && dms ipc call settings set blurBorderOpacity 0.32 >/dev/null 2>&1 \
+        && dms ipc call settings set m3ElevationEnabled true >/dev/null 2>&1 \
+        && dms ipc call settings set m3ElevationIntensity 18 >/dev/null 2>&1 \
+        && dms ipc call settings set m3ElevationOpacity 32 >/dev/null 2>&1 \
+        && dms ipc call settings set m3ElevationColorMode custom >/dev/null 2>&1 \
+        && dms ipc call settings set m3ElevationCustomColor '#050713' >/dev/null 2>&1 \
+        && dms ipc call settings set popoutElevationEnabled true >/dev/null 2>&1 \
+        && dms ipc call wallpaper set "${wallpaper}" >/dev/null 2>&1 \
+        && [[ -f "${settings_file}" ]]; then
+        # DMS intentionally rejects object updates over IPC. Replace only the
+        # barConfigs property in its persisted JSON; its file watcher reloads
+        # this atomically while every unrelated preference remains untouched.
+        cp -n "${settings_file}" "${config_root}/settings.before-ben-glass.json"
+        settings_tmp="$(mktemp "${config_root}/settings.json.XXXXXX")"
+        if jq --argjson bars "${bar_config}" '.barConfigs = $bars' \
+            "${settings_file}" >"${settings_tmp}"; then
+            chmod 0600 "${settings_tmp}"
+            mv -f "${settings_tmp}" "${settings_file}"
+            # DMS watches writes to the existing file but an atomic rename can
+            # retain the old in-memory object. Reload only the shell so a new
+            # user sees the glass layout during this same login.
+            dms restart >/dev/null 2>&1 || true
+            for _ in {1..50}; do
+                if dms ipc call settings get barConfigs >/dev/null 2>&1; then
+                    break
+                fi
+                sleep 0.1
+            done
+        else
+            rm -f "${settings_tmp}"
+            notify-send \
+                "Ben OS shell" \
+                "The Aurora colors loaded, but the glass bar layout could not be saved."
+            exit 1
+        fi
         touch "${theme_marker}"
+    else
+        notify-send \
+            "Ben OS shell" \
+            "The shell started, but its Aurora glass settings could not be applied."
+    fi
+fi
+
+# System-plugin discovery is asynchronous and enable is idempotent. Give it a
+# short window so the help pill appears on the first login after an update.
+for _ in {1..50}; do
+    plugin_status="$(dms ipc call plugins status benOsHelp 2>/dev/null || true)"
+    if [[ "${plugin_status}" == loaded ]]; then
         exit 0
+    fi
+    if [[ "${plugin_status}" == disabled ]]; then
+        dms ipc call plugins enable benOsHelp >/dev/null 2>&1 || true
     fi
     sleep 0.1
 done
 
 notify-send \
     "Ben OS shell" \
-    "The shell started, but its Aurora theme could not be selected automatically."
+    "Aurora glass is active, but the keyboard-help widget could not be loaded."

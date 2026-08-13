@@ -118,6 +118,8 @@ grep -q 'hyprland.start' /usr/share/hypr/hyprland.lua
 test -f /usr/share/backgrounds/ben-bazzite/aurora-glass.png
 test -f /usr/share/backgrounds/ben-bazzite/aurora-glass-gdm.png
 test -f /usr/share/ben-bazzite/dms-theme.json
+test -f /etc/xdg/quickshell/dms-plugins/benOsHelp/plugin.json
+test -f /etc/xdg/quickshell/dms-plugins/benOsHelp/BenOsHelp.qml
 test -f /etc/ben-bazzite/ben-os-gdm-logo.png
 test -f /etc/xdg/waybar/config.jsonc
 test -f /etc/xdg/gtk-3.0/settings.ini
@@ -175,6 +177,9 @@ jq empty /etc/xdg/waybar/config.jsonc
 jq -e '.name == "Ben OS Aurora" and .primary == "#6ee7fa"
     and .secondary == "#9b7bff" and .error == "#ff7a90"' \
     /usr/share/ben-bazzite/dms-theme.json >/dev/null
+jq -e '.id == "benOsHelp" and .type == "widget"
+    and (.capabilities | index("dankbar-widget"))' \
+    /etc/xdg/quickshell/dms-plugins/benOsHelp/plugin.json >/dev/null
 jq -e '.text == "" and .class == "empty"' \
     < <(/usr/libexec/ben-bazzite/scratchpad-status) >/dev/null
 bash -n \

@@ -1,0 +1,14 @@
+{
+  "$schema": "https://danklinux.com/schemas/plugin.json",
+  "id": "benOsHelp",
+  "name": "Ben OS Keyboard Help",
+  "description": "Opens the Ben OS keyboard shortcut reference from DankBar.",
+  "version": "1.0.0",
+  "author": "Ben OS",
+  "type": "widget",
+  "capabilities": ["dankbar-widget"],
+  "component": "./BenOsHelp.qml",
+  "icon": "question_mark",
+  "requires_dms": ">=1.4.0",
+  "permissions": ["process"]
+}
