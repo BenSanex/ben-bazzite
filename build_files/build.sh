@@ -54,6 +54,15 @@ dnf5 -y copr enable avengemedia/dms
 dnf5 install -y dms
 dnf5 -y copr disable avengemedia/dms
 
+# Add concise, live-data tooltips to every shared DMS bar pill and make the
+# hover highlight distinct from the deliberately transparent idle surface.
+# Applying this as a checked patch lets upstream drift fail the build instead
+# of silently installing a partially customized shell.
+git apply \
+    --unsafe-paths \
+    --directory=/usr/share/quickshell/dms \
+    /ctx/dms-tooltips.patch
+
 # Fail the image build if either desktop session, the compositor, or the
 # portal is lost. GDM will offer both GNOME and Hyprland at sign-in.
 test -x /usr/bin/start-hyprland
@@ -61,6 +70,10 @@ test -x /usr/bin/gnome-session
 test -x /usr/bin/gnome-control-center
 test -x /usr/bin/dms
 test -x /usr/bin/qs
+grep -q 'return "CPU " + value.toFixed(0) + "%"' \
+    /usr/share/quickshell/dms/Modules/Plugins/BasePill.qml
+grep -q 'item.widgetId = widgetId' \
+    /usr/share/quickshell/dms/Modules/DankBar/WidgetHost.qml
 test -x /usr/bin/ghostty
 test -x /usr/bin/hyprpaper
 test -x /usr/bin/hyprlock

@@ -1,0 +1,142 @@
+diff --git a/Modules/Plugins/BasePill.qml b/Modules/Plugins/BasePill.qml
+--- a/Modules/Plugins/BasePill.qml
++++ b/Modules/Plugins/BasePill.qml
+@@ -17,6 +17,7 @@ Item {
+     property real sectionSpacing: 0
+     property bool enableBackgroundHover: true
+     property bool enableCursor: true
++    property string widgetId: ""
+     readonly property bool isMouseHovered: mouseArea.containsMouse
+     property bool isLeftBarEdge: false
+     property bool isRightBarEdge: false
+@@ -49,5 +50,57 @@ Item {
+         rippleLayer.trigger(pos.x, pos.y);
+     }
+ 
++    function currentTooltipText() {
++        switch (widgetId) {
++        case "launcherButton":
++            return "Applications • Super+D";
++        case "focusedWindow":
++            return "Active window";
++        case "clock":
++            return Qt.formatDateTime(new Date(), "dddd, MMMM d • h:mm AP");
++        case "weather":
++            return "Weather and forecast";
++        case "music":
++            return "Media controls";
++        case "systemTray":
++            return "System tray";
++        case "clipboard":
++            return "Clipboard history";
++        case "cpuUsage": {
++            const value = DgopService.cpuUsage;
++            return value === undefined || value === null ? "CPU unavailable" : "CPU " + value.toFixed(0) + "%";
++        }
++        case "memUsage": {
++            const value = DgopService.memoryUsage;
++            if (value === undefined || value === null)
++                return "Memory unavailable";
++            const used = DgopService.usedMemoryMB > 0 ? " • " + (DgopService.usedMemoryMB / 1024).toFixed(1) + " GB used" : "";
++            return "Memory " + value.toFixed(0) + "%" + used;
++        }
++        case "notificationButton": {
++            const count = NotificationService.notifications.length;
++            return count === 1 ? "Notifications (1)" : "Notifications (" + count + ")";
++        }
++        case "battery": {
++            if (!BatteryService.batteryAvailable)
++                return "Battery unavailable";
++            const state = BatteryService.isCharging ? " • charging" : (BatteryService.isPluggedIn ? " • plugged in" : "");
++            return "Battery " + BatteryService.batteryLevel.toFixed(0) + "%" + state;
++        }
++        case "idleInhibitor":
++            return SessionService.idleInhibited ? "Sleep inhibited • click to allow" : "Sleep allowed • click to inhibit";
++        case "privacyIndicator":
++            return "Privacy status";
++        case "powerMenuButton":
++            return "Session and power menu • Super+Shift+E";
++        case "controlCenterButton":
++            return "Quick settings • Wi-Fi, Bluetooth and audio";
++        case "benOsHelp":
++            return "Keyboard shortcuts • Super+F1";
++        default:
++            return "";
++        }
++    }
++
+     width: isVerticalOrientation ? barThickness : visualWidth
+     height: isVerticalOrientation ? visualHeight : barThickness
+@@ -106,7 +155,7 @@ Item {
+ 
+                 const rawTransparency = (root.barConfig && root.barConfig.widgetTransparency !== undefined) ? root.barConfig.widgetTransparency : 1.0;
+                 const isHovered = root.enableBackgroundHover && (mouseArea.containsMouse || (root.isHovered || false));
+-                const transparency = isHovered ? Math.max(0.3, rawTransparency) : rawTransparency;
++                const transparency = isHovered ? Math.max(0.52, rawTransparency) : rawTransparency;
+                 const baseColor = isHovered ? BlurService.hoverColor(Theme.widgetBaseHoverColor) : Theme.widgetBaseBackgroundColor;
+ 
+                 if (Theme.widgetBackgroundHasAlpha) {
+@@ -171,6 +223,33 @@ Item {
+         }
+     }
+ 
++    HoverHandler {
++        id: tooltipHover
++        enabled: !(root.barConfig?.hoverPopouts ?? false) && root.currentTooltipText() !== ""
++        onHoveredChanged: {
++            if (hovered) {
++                tooltipDelay.restart();
++            } else {
++                tooltipDelay.stop();
++                pillTooltip.hide();
++            }
++        }
++    }
++
++    Timer {
++        id: tooltipDelay
++        interval: 420
++        repeat: false
++        onTriggered: {
++            const side = root.axis?.edge === "bottom" ? "top" : (root.axis?.edge === "left" ? "right" : (root.axis?.edge === "right" ? "left" : "bottom"));
++            pillTooltip.show(root.currentTooltipText(), root, 0, 0, side);
++        }
++    }
++
++    DankTooltipV2 {
++        id: pillTooltip
++    }
++
+     property bool _blurRegistered: false
+     readonly property bool _shouldBlur: BlurService.enabled && !!blurBarWindow && !!blurBarWindow.registerBlurWidget && !(barConfig?.noBackground ?? false) && root.visible && root.width > 0
+ 
+diff --git a/Modules/DankBar/WidgetHost.qml b/Modules/DankBar/WidgetHost.qml
+--- a/Modules/DankBar/WidgetHost.qml
++++ b/Modules/DankBar/WidgetHost.qml
+@@ -196,6 +196,9 @@ Loader {
+             } catch (e) {}
+         }
+ 
++        if (item.widgetId !== undefined)
++            item.widgetId = widgetId;
++
+         if (item.pluginService !== undefined) {
+             var parts = widgetId.split(":");
+             var pluginId = parts[0];
+diff --git a/Modules/Plugins/PluginComponent.qml b/Modules/Plugins/PluginComponent.qml
+--- a/Modules/Plugins/PluginComponent.qml
++++ b/Modules/Plugins/PluginComponent.qml
+@@ -180,5 +180,6 @@ Item {
+     BasePill {
+         id: horizontalPill
++        widgetId: root.pluginId
+         visible: !isVertical && hasHorizontalPill
+         opacity: root.effectiveVisible ? 1 : 0
+         axis: root.axis
+@@ -240,5 +241,6 @@ Item {
+     BasePill {
+         id: verticalPill
++        widgetId: root.pluginId
+         visible: isVertical && hasVerticalPill
+         opacity: root.effectiveVisible ? 1 : 0
+         axis: root.axis
