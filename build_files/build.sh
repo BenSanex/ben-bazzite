@@ -172,7 +172,7 @@ setpriv --reuid=nobody --regid=nobody --clear-groups env \
 LC_ALL=C.UTF-8 fuzzel --config=/etc/xdg/fuzzel/fuzzel.ini --check-config
 XDG_CONFIG_HOME=/etc/xdg ghostty +show-config --changes-only >/dev/null
 jq empty /etc/xdg/waybar/config.jsonc
-jq -e '.name == "Ben OS Aurora" and .primary == "#6ee7fa" \
+jq -e '.name == "Ben OS Aurora" and .primary == "#6ee7fa"
     and .secondary == "#9b7bff" and .error == "#ff7a90"' \
     /usr/share/ben-bazzite/dms-theme.json >/dev/null
 jq -e '.text == "" and .class == "empty"' \
