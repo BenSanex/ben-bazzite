@@ -79,6 +79,16 @@ grep -q '^Exec=/usr/bin/gnome-session$' /usr/share/wayland-sessions/gnome.deskto
 # fallback config replaces Hyprland's packaged example.
 cp -avf "/ctx/system_files"/. /
 
+# Keep the greeter override in the immutable image rather than /etc, which is
+# three-way merged across bootc deployments. Put it immediately after GDM's
+# user database so it overrides both persistent and vendor Bazzite defaults.
+dconf compile \
+    /usr/share/ben-bazzite/gdm \
+    /usr/share/ben-bazzite/gdm.d
+sed -i \
+    '/^user-db:user$/a file-db:/usr/share/ben-bazzite/gdm' \
+    /usr/share/dconf/profile/gdm
+
 chmod 0755 \
     /usr/bin/ben-bazzite-hyprland-apply \
     /usr/libexec/ben-bazzite/dark-theme \
@@ -100,10 +110,14 @@ test -f /etc/dconf/profile/user
 test -f /usr/lib/systemd/user/ben-bazzite-hyprland-session.target
 test -f /usr/share/themes/adw-gtk3-dark/index.theme
 test ! -e /etc/dconf/profile/gdm
+test "$(sed -n '2p' /usr/share/dconf/profile/gdm)" = \
+    'file-db:/usr/share/ben-bazzite/gdm'
 grep -Fxq 'file-db:/usr/share/gdm/greeter-dconf-defaults' \
     /usr/share/dconf/profile/gdm
 grep -Fxq "logo='/etc/ben-bazzite/ben-os-gdm-logo.png'" \
-    /etc/dconf/db/gdm.d/00-ben-bazzite-dark
+    /usr/share/ben-bazzite/gdm.d/00-ben-bazzite-dark
+grep -Fxq '/org/gnome/desktop/background/picture-uri' \
+    /usr/share/ben-bazzite/gdm.d/locks/00-ben-bazzite-greeter
 grep -q '^org.freedesktop.impl.portal.Settings=gtk$' \
     /etc/xdg/xdg-desktop-portal/hyprland-portals.conf
 fc-match Roboto | grep -qi 'Roboto'
@@ -123,6 +137,16 @@ setpriv --reuid=nobody --regid=nobody --clear-groups env \
     GSETTINGS_BACKEND=memory \
     /usr/libexec/ben-bazzite/dark-theme
 cmp -s /etc/xdg/ghostty/config /tmp/theme-verify/config/ghostty/config
+setpriv --reuid=nobody --regid=nobody --clear-groups env \
+    HOME=/tmp/hypr-verify \
+    XDG_CONFIG_HOME=/tmp/hypr-verify/config \
+    /usr/bin/ben-bazzite-hyprland-apply
+cmp -s /usr/share/hypr/hyprland.lua \
+    /tmp/hypr-verify/config/hypr/hyprland.lua
+cmp -s /etc/xdg/waybar/config.jsonc \
+    /tmp/hypr-verify/config/waybar/config.jsonc
+cmp -s /etc/xdg/waybar/style.css \
+    /tmp/hypr-verify/config/waybar/style.css
 setpriv --reuid=nobody --regid=nobody --clear-groups env \
     HOME=/tmp/hypr-verify \
     XDG_RUNTIME_DIR=/tmp/hypr-verify \

@@ -1,23 +1,49 @@
 #!/bin/bash
 set -eu
 
-source_config="/usr/share/hypr/hyprland.lua"
-config_root="${XDG_CONFIG_HOME:-${HOME}/.config}/hypr"
-target_config="${config_root}/hyprland.lua"
+config_home="${XDG_CONFIG_HOME:-${HOME}/.config}"
+timestamp="$(date +%Y%m%d-%H%M%S)"
+changed=false
 
-mkdir -p "${config_root}"
+install_config() {
+    source_config="$1"
+    target_config="$2"
+    label="$3"
 
-if [[ -f "${target_config}" ]]; then
-    if cmp -s "${source_config}" "${target_config}"; then
-        echo "Ben Bazzite Hyprland configuration is already active."
-        exit 0
+    install -d -m 0700 "$(dirname "${target_config}")"
+
+    if [[ -f "${target_config}" ]]; then
+        if cmp -s "${source_config}" "${target_config}"; then
+            echo "${label} configuration is already active."
+            return
+        fi
+
+        backup_config="${target_config}.backup-${timestamp}"
+        cp --preserve=mode,timestamps "${target_config}" "${backup_config}"
+        echo "Backed up the existing configuration to ${backup_config}"
     fi
 
-    backup_config="${target_config}.backup-$(date +%Y%m%d-%H%M%S)"
-    cp --preserve=mode,timestamps "${target_config}" "${backup_config}"
-    echo "Backed up the existing configuration to ${backup_config}"
-fi
+    install -m 0644 "${source_config}" "${target_config}"
+    echo "Installed the Ben Bazzite ${label} configuration."
+    changed=true
+}
 
-install -m 0644 "${source_config}" "${target_config}"
-echo "Installed the Ben Bazzite Hyprland desktop configuration."
-echo "Log out and back into Hyprland once to start the complete session."
+install_config \
+    /usr/share/hypr/hyprland.lua \
+    "${config_home}/hypr/hyprland.lua" \
+    Hyprland
+install_config \
+    /etc/xdg/waybar/config.jsonc \
+    "${config_home}/waybar/config.jsonc" \
+    Waybar
+install_config \
+    /etc/xdg/waybar/style.css \
+    "${config_home}/waybar/style.css" \
+    "Waybar style"
+
+if [[ "${changed}" == true ]]; then
+    pkill -SIGUSR2 -x waybar 2>/dev/null || :
+    echo "Applied the Ben Bazzite desktop configuration."
+else
+    echo "The complete Ben Bazzite desktop configuration is already active."
+fi

@@ -99,19 +99,7 @@
     "format": "{:%a  %b %d   %H:%M}",
     "format-alt": "{:%Y-%m-%d   %H:%M:%S}",
     "on-click": "env GTK_THEME=Adwaita:dark zenity --calendar --title=Calendar --width=340 --height=300",
-    "tooltip-format": "<tt><small>{calendar}</small></tt>",
-    "calendar": {
-      "mode": "month",
-      "weeks-pos": "right",
-      "on-scroll": 1,
-      "format": {
-        "months": "<span color='#9b7bff'><b>{}</b></span>",
-        "days": "<span color='#aeb9d6'>{}</span>",
-        "weeks": "<span color='#6ee7fa'>W{}</span>",
-        "weekdays": "<span color='#6ee7fa'><b>{}</b></span>",
-        "today": "<span color='#ff7a90'><b><u>{}</u></b></span>"
-      }
-    }
+    "tooltip-format": "Click to open calendar"
   },
   "privacy": {
     "icon-spacing": 7,
