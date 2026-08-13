@@ -1,0 +1,40 @@
+#!/bin/bash
+# Start the Quickshell-based desktop and seed the Ben OS theme once. DMS keeps
+# all later user changes; a versioned marker lets a future image opt into a
+# deliberate theme migration without resetting preferences on every login.
+set -u
+
+state_root="${XDG_STATE_HOME:-${HOME}/.local/state}/ben-bazzite"
+theme_marker="${state_root}/dms-theme-v1"
+theme_file="/usr/share/ben-bazzite/dms-theme.json"
+wallpaper="/usr/share/backgrounds/ben-bazzite/aurora-glass.png"
+
+if ! dms run -d; then
+    notify-send \
+        "Ben OS shell" \
+        "Quickshell could not start; loading the fallback desktop bar."
+    waybar &
+    mako --config /etc/xdg/mako/config &
+    swayosd-server &
+    exit 1
+fi
+
+if [[ -e "${theme_marker}" ]]; then
+    exit 0
+fi
+
+install -d -m 0700 "${state_root}"
+
+for _ in {1..50}; do
+    if dms ipc call settings set customThemeFile "${theme_file}" >/dev/null 2>&1 \
+        && dms ipc call settings set currentThemeName custom >/dev/null 2>&1 \
+        && dms ipc call wallpaper set "${wallpaper}" >/dev/null 2>&1; then
+        touch "${theme_marker}"
+        exit 0
+    fi
+    sleep 0.1
+done
+
+notify-send \
+    "Ben OS shell" \
+    "The shell started, but its Aurora theme could not be selected automatically."

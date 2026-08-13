@@ -4,6 +4,9 @@ APPS
 Super + D                 App launcher
 Super + Return            Terminal
 Super + E                 Files
+Super + A                 Quick controls
+Super + N                 Notifications
+Super + Comma             Shell settings
 Super + F1                This shortcut guide
 
 WINDOWS
@@ -36,10 +39,9 @@ MEDIA
 Volume/Brightness keys    Adjust volume or brightness
 Play/Next/Previous keys   Control media playback
 
-WAYBAR
-Click the Fedora icon     App launcher
-Click the clock           Open calendar
-Click audio/network/BT    Open its control panel
-Click the moon icon       Prevent/allow idle sleep
-Click ?                   This guide
+DANKBAR
+Click the launcher        Apps, files, and search
+Click the clock           Calendar and agenda
+Click audio/network/BT    Ben OS quick controls
+Click notifications       Notification center
 Click power               Power/session menu

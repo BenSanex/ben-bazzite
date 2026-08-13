@@ -2,7 +2,7 @@
 -- This image-owned fallback is copied to ~/.config/hypr/hyprland.lua on first use.
 
 local terminal = "ghostty"
-local launcher = "fuzzel"
+local launcher = "dms ipc call spotlight toggle"
 local wallpaper = "/usr/share/backgrounds/ben-bazzite/aurora-glass.png"
 
 hl.monitor({
@@ -23,6 +23,9 @@ hl.env("GTK_THEME", "Adwaita:dark")
 -- Let Qt applications inherit the same GTK colors instead of falling back to
 -- a bright Fusion theme.
 hl.env("QT_QPA_PLATFORMTHEME", "gtk3")
+hl.env("QT_QPA_PLATFORM", "wayland")
+hl.env("QT_QPA_PLATFORMTHEME_QT6", "gtk3")
+hl.env("ELECTRON_OZONE_PLATFORM_HINT", "auto")
 
 hl.config({
     general = {
@@ -117,16 +120,13 @@ hl.animation({ leaf = "layers", enabled = true, speed = 3.5, bezier = "benEase",
 
 hl.layer_rule({ match = { namespace = "waybar" }, blur = true })
 hl.layer_rule({ match = { namespace = "launcher" }, blur = true })
+hl.layer_rule({ match = { namespace = "dms" }, blur = true })
 
 hl.on("hyprland.start", function()
     hl.exec_cmd("/usr/libexec/ben-bazzite/session-start")
     hl.exec_cmd("/usr/libexec/ben-bazzite/dark-theme")
     hl.exec_cmd("hyprpaper -c /usr/share/hypr/hyprpaper.conf")
-    hl.exec_cmd("waybar")
-    hl.exec_cmd("mako --config /etc/xdg/mako/config")
-    hl.exec_cmd("swayosd-server")
-    hl.exec_cmd("nm-applet --indicator")
-    hl.exec_cmd("blueman-applet")
+    hl.exec_cmd("/usr/libexec/ben-bazzite/dms-start")
     hl.exec_cmd("hypridle -c /usr/share/hypr/hypridle.conf")
     hl.exec_cmd("systemctl --user start hyprpolkitagent.service")
 end)
@@ -136,8 +136,11 @@ hl.bind("SUPER + Return", hl.dsp.exec_cmd(terminal))
 hl.bind("SUPER + D", hl.dsp.exec_cmd(launcher))
 hl.bind("SUPER + E", hl.dsp.exec_cmd("env GTK_THEME=Adwaita:dark nautilus --new-window"))
 hl.bind("SUPER + F1", hl.dsp.exec_cmd("/usr/libexec/ben-bazzite/keybinds"))
+hl.bind("SUPER + A", hl.dsp.exec_cmd("dms ipc call control-center toggle"))
+hl.bind("SUPER + N", hl.dsp.exec_cmd("dms ipc call notifications toggle"))
+hl.bind("SUPER + COMMA", hl.dsp.exec_cmd("dms ipc call settings focusOrToggle"))
 hl.bind("SUPER + L", hl.dsp.exec_cmd("hyprlock -c /usr/share/hypr/hyprlock.conf"))
-hl.bind("SUPER + SHIFT + E", hl.dsp.exec_cmd("wlogout"))
+hl.bind("SUPER + SHIFT + E", hl.dsp.exec_cmd("dms ipc call powermenu toggle"))
 hl.bind("SUPER + Q", hl.dsp.window.close())
 hl.bind("SUPER + F", hl.dsp.window.fullscreen({ mode = "fullscreen" }))
 hl.bind("SUPER + SPACE", hl.dsp.window.float())
@@ -169,12 +172,12 @@ end
 -- Screenshots, audio, brightness, and media keys.
 hl.bind("Print", hl.dsp.exec_cmd("/usr/libexec/ben-bazzite/screenshot region"))
 hl.bind("SHIFT + Print", hl.dsp.exec_cmd("/usr/libexec/ben-bazzite/screenshot output"))
-hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd("swayosd-client --output-volume +5 --max-volume 100"), { locked = true, repeating = true })
-hl.bind("XF86AudioLowerVolume", hl.dsp.exec_cmd("swayosd-client --output-volume -5 --max-volume 100"), { locked = true, repeating = true })
-hl.bind("XF86AudioMute", hl.dsp.exec_cmd("swayosd-client --output-volume mute-toggle"), { locked = true })
-hl.bind("XF86AudioMicMute", hl.dsp.exec_cmd("swayosd-client --input-volume mute-toggle"), { locked = true })
-hl.bind("XF86MonBrightnessUp", hl.dsp.exec_cmd("swayosd-client --brightness +5"), { locked = true, repeating = true })
-hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd("swayosd-client --brightness -5"), { locked = true, repeating = true })
+hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd("dms ipc call audio increment 5"), { locked = true, repeating = true })
+hl.bind("XF86AudioLowerVolume", hl.dsp.exec_cmd("dms ipc call audio decrement 5"), { locked = true, repeating = true })
+hl.bind("XF86AudioMute", hl.dsp.exec_cmd("dms ipc call audio mute"), { locked = true })
+hl.bind("XF86AudioMicMute", hl.dsp.exec_cmd("dms ipc call mic mute"), { locked = true })
+hl.bind("XF86MonBrightnessUp", hl.dsp.exec_cmd("dms ipc call brightness increment 5"), { locked = true, repeating = true })
+hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd("dms ipc call brightness decrement 5"), { locked = true, repeating = true })
 hl.bind("XF86AudioPlay", hl.dsp.exec_cmd("playerctl play-pause"), { locked = true })
 hl.bind("XF86AudioPause", hl.dsp.exec_cmd("playerctl play-pause"), { locked = true })
 hl.bind("XF86AudioNext", hl.dsp.exec_cmd("playerctl next"), { locked = true })

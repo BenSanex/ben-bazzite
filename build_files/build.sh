@@ -47,11 +47,20 @@ dnf5 -y copr enable erikreider/swayosd
 dnf5 install -y swayosd
 dnf5 -y copr disable erikreider/swayosd
 
+# DankMaterialShell supplies the Quickshell bar, launcher, notifications, OSD,
+# and quick controls. Its stable COPR declares the matching DankLinux runtime
+# repository, so keep the single source scoped to this transaction.
+dnf5 -y copr enable avengemedia/dms
+dnf5 install -y dms
+dnf5 -y copr disable avengemedia/dms
+
 # Fail the image build if either desktop session, the compositor, or the
 # portal is lost. GDM will offer both GNOME and Hyprland at sign-in.
 test -x /usr/bin/start-hyprland
 test -x /usr/bin/gnome-session
 test -x /usr/bin/gnome-control-center
+test -x /usr/bin/dms
+test -x /usr/bin/qs
 test -x /usr/bin/ghostty
 test -x /usr/bin/hyprpaper
 test -x /usr/bin/hyprlock
@@ -97,14 +106,18 @@ sed -i \
 chmod 0755 \
     /usr/bin/ben-bazzite-hyprland-apply \
     /usr/libexec/ben-bazzite/dark-theme \
+    /usr/libexec/ben-bazzite/dms-start \
     /usr/libexec/ben-bazzite/keybinds \
     /usr/libexec/ben-bazzite/session-start \
     /usr/libexec/ben-bazzite/scratchpad-status \
     /usr/libexec/ben-bazzite/screenshot
 grep -q 'local terminal = "ghostty"' /usr/share/hypr/hyprland.lua
+grep -q 'local launcher = "dms ipc call spotlight toggle"' \
+    /usr/share/hypr/hyprland.lua
 grep -q 'hyprland.start' /usr/share/hypr/hyprland.lua
 test -f /usr/share/backgrounds/ben-bazzite/aurora-glass.png
 test -f /usr/share/backgrounds/ben-bazzite/aurora-glass-gdm.png
+test -f /usr/share/ben-bazzite/dms-theme.json
 test -f /etc/ben-bazzite/ben-os-gdm-logo.png
 test -f /etc/xdg/waybar/config.jsonc
 test -f /etc/xdg/gtk-3.0/settings.ini
@@ -159,11 +172,15 @@ setpriv --reuid=nobody --regid=nobody --clear-groups env \
 LC_ALL=C.UTF-8 fuzzel --config=/etc/xdg/fuzzel/fuzzel.ini --check-config
 XDG_CONFIG_HOME=/etc/xdg ghostty +show-config --changes-only >/dev/null
 jq empty /etc/xdg/waybar/config.jsonc
+jq -e '.name == "Ben OS Aurora" and .primary == "#6ee7fa" \
+    and .secondary == "#9b7bff" and .error == "#ff7a90"' \
+    /usr/share/ben-bazzite/dms-theme.json >/dev/null
 jq -e '.text == "" and .class == "empty"' \
     < <(/usr/libexec/ben-bazzite/scratchpad-status) >/dev/null
 bash -n \
     /usr/bin/ben-bazzite-hyprland-apply \
     /usr/libexec/ben-bazzite/dark-theme \
+    /usr/libexec/ben-bazzite/dms-start \
     /usr/libexec/ben-bazzite/keybinds \
     /usr/libexec/ben-bazzite/session-start \
     /usr/libexec/ben-bazzite/scratchpad-status \
