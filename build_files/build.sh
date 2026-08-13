@@ -51,6 +51,7 @@ dnf5 -y copr disable erikreider/swayosd
 # portal is lost. GDM will offer both GNOME and Hyprland at sign-in.
 test -x /usr/bin/start-hyprland
 test -x /usr/bin/gnome-session
+test -x /usr/bin/gnome-control-center
 test -x /usr/bin/ghostty
 test -x /usr/bin/hyprpaper
 test -x /usr/bin/hyprlock
@@ -74,6 +75,10 @@ grep -q '^Exec=/usr/bin/start-hyprland$' /usr/share/wayland-sessions/hyprland.de
 test -f /usr/share/wayland-sessions/gnome.desktop
 grep -q '^Name=GNOME$' /usr/share/wayland-sessions/gnome.desktop
 grep -q '^Exec=/usr/bin/gnome-session$' /usr/share/wayland-sessions/gnome.desktop
+settings_panels="$(env XDG_CURRENT_DESKTOP=GNOME gnome-control-center --list)"
+for settings_panel in wifi bluetooth sound; do
+    grep -Eq "^[[:space:]]+${settings_panel}$" <<<"${settings_panels}"
+done
 
 # Apply image-owned files after RPM installation so the maintained Ben Bazzite
 # fallback config replaces Hyprland's packaged example.
