@@ -77,8 +77,6 @@ test -x /usr/bin/slurp
 test -x /usr/bin/zenity
 test -x /usr/bin/wl-copy
 test -x /usr/libexec/xdg-desktop-portal-hyprland
-test -f /usr/share/wayland-sessions/hyprland.desktop
-grep -q '^Exec=/usr/bin/start-hyprland$' /usr/share/wayland-sessions/hyprland.desktop
 test -f /usr/share/wayland-sessions/gnome.desktop
 grep -q '^Name=GNOME$' /usr/share/wayland-sessions/gnome.desktop
 grep -q '^Exec=/usr/bin/gnome-session$' /usr/share/wayland-sessions/gnome.desktop
@@ -103,6 +101,7 @@ sed -i \
 
 chmod 0755 \
     /usr/bin/ben-bazzite-hyprland-apply \
+    /usr/bin/ben-bazzite-hyprland-session \
     /usr/libexec/ben-bazzite/dark-theme \
     /usr/libexec/ben-bazzite/dms-start \
     /usr/libexec/ben-bazzite/keybinds \
@@ -113,6 +112,10 @@ grep -q 'local terminal = "ghostty"' /usr/share/hypr/hyprland.lua
 grep -q 'local launcher = "dms ipc call spotlight toggle"' \
     /usr/share/hypr/hyprland.lua
 grep -q 'hyprland.start' /usr/share/hypr/hyprland.lua
+grep -Fxq 'Exec=/usr/bin/ben-bazzite-hyprland-session' \
+    /usr/share/wayland-sessions/hyprland.desktop
+grep -Fq -- '--config /usr/share/hypr/hyprland.lua' \
+    /usr/bin/ben-bazzite-hyprland-session
 test -f /usr/share/backgrounds/ben-bazzite/aurora-glass.png
 test -f /usr/share/backgrounds/ben-bazzite/aurora-glass-gdm.png
 test -f /usr/share/ben-bazzite/dms-theme.json
@@ -175,6 +178,7 @@ jq -e '.text == "" and .class == "empty"' \
     < <(/usr/libexec/ben-bazzite/scratchpad-status) >/dev/null
 bash -n \
     /usr/bin/ben-bazzite-hyprland-apply \
+    /usr/bin/ben-bazzite-hyprland-session \
     /usr/libexec/ben-bazzite/dark-theme \
     /usr/libexec/ben-bazzite/dms-start \
     /usr/libexec/ben-bazzite/keybinds \

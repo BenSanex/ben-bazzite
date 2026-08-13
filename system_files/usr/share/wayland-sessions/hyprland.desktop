@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=Hyprland
+Comment=Ben OS Hyprland desktop
+Exec=/usr/bin/ben-bazzite-hyprland-session
+Type=Application
+DesktopNames=Hyprland
+Keywords=tiling;wayland;compositor;

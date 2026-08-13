@@ -1,0 +1,7 @@
+#!/bin/bash
+# Hyprland only auto-discovers hyprland.conf. Ben Bazzite deliberately uses
+# the native Lua configuration, so always pass its image-owned path explicitly.
+set -eu
+
+exec /usr/bin/start-hyprland -- \
+    --config /usr/share/hypr/hyprland.lua

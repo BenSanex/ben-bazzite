@@ -6,7 +6,7 @@ set -u
 
 state_root="${XDG_STATE_HOME:-${HOME}/.local/state}/ben-bazzite"
 config_root="${XDG_CONFIG_HOME:-${HOME}/.config}/DankMaterialShell"
-theme_marker="${state_root}/dms-desktop-v2"
+theme_marker="${state_root}/dms-desktop-v3"
 theme_file="/usr/share/ben-bazzite/dms-theme.json"
 wallpaper="/usr/share/backgrounds/ben-bazzite/aurora-glass.png"
 settings_file="${config_root}/settings.json"
@@ -48,8 +48,8 @@ if [[ ! -e "${theme_marker}" ]]; then
         innerPadding: 4,
         barInsetPadding: 10,
         bottomGap: 8,
-        transparency: 0.30,
-        widgetTransparency: 0.14,
+        transparency: 0.22,
+        widgetTransparency: 0.10,
         squareCorners: false,
         noBackground: false,
         maximizeWidgetIcons: false,

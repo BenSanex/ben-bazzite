@@ -76,20 +76,16 @@ diff --git a/Modules/Plugins/BasePill.qml b/Modules/Plugins/BasePill.qml
                  const baseColor = isHovered ? BlurService.hoverColor(Theme.widgetBaseHoverColor) : Theme.widgetBaseBackgroundColor;
  
                  if (Theme.widgetBackgroundHasAlpha) {
-@@ -171,6 +223,33 @@ Item {
+@@ -171,6 +223,29 @@ Item {
          }
      }
  
-+    HoverHandler {
-+        id: tooltipHover
-+        enabled: !(root.barConfig?.hoverPopouts ?? false) && root.currentTooltipText() !== ""
-+        onHoveredChanged: {
-+            if (hovered) {
-+                tooltipDelay.restart();
-+            } else {
-+                tooltipDelay.stop();
-+                pillTooltip.hide();
-+            }
++    onIsMouseHoveredChanged: {
++        if (isMouseHovered && !(root.barConfig?.hoverPopouts ?? false) && root.currentTooltipText() !== "") {
++            tooltipDelay.restart();
++        } else {
++            tooltipDelay.stop();
++            pillTooltip.hide();
 +        }
 +    }
 +
