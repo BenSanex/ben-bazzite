@@ -4,3 +4,16 @@ gtk-theme='adw-gtk3-dark'
 accent-color='purple'
 font-name='Roboto 11'
 document-font-name='Roboto 11'
+
+[org/gnome/desktop/background]
+picture-uri='file:///usr/share/backgrounds/ben-bazzite/aurora-glass.png'
+picture-uri-dark='file:///usr/share/backgrounds/ben-bazzite/aurora-glass.png'
+picture-options='zoom'
+primary-color='#050713'
+secondary-color='#111930'
+
+[org/gnome/login-screen]
+logo='/etc/ben-bazzite/ben-os-gdm-logo.png'
+fallback-logo='/etc/ben-bazzite/ben-os-gdm-logo.png'
+banner-message-enable=true
+banner-message-text='BEN OS'

@@ -81,6 +81,7 @@ chmod 0755 \
 grep -q 'local terminal = "ghostty"' /usr/share/hypr/hyprland.lua
 grep -q 'hyprland.start' /usr/share/hypr/hyprland.lua
 test -f /usr/share/backgrounds/ben-bazzite/aurora-glass.png
+test -f /etc/ben-bazzite/ben-os-gdm-logo.png
 test -f /etc/xdg/waybar/config.jsonc
 test -f /etc/xdg/gtk-3.0/settings.ini
 test -f /etc/xdg/gtk-4.0/settings.ini
@@ -91,6 +92,8 @@ test -f /usr/share/themes/adw-gtk3-dark/index.theme
 test ! -e /etc/dconf/profile/gdm
 grep -Fxq 'file-db:/usr/share/gdm/greeter-dconf-defaults' \
     /usr/share/dconf/profile/gdm
+grep -Fxq "logo='/etc/ben-bazzite/ben-os-gdm-logo.png'" \
+    /etc/dconf/db/gdm.d/00-ben-bazzite-dark
 grep -q '^org.freedesktop.impl.portal.Settings=gtk$' \
     /etc/xdg/xdg-desktop-portal/hyprland-portals.conf
 fc-match Roboto | grep -qi 'Roboto'

@@ -12,10 +12,10 @@ Super + F                 Fullscreen
 Super + Space             Toggle floating
 Super + P                 Toggle pseudotile
 Super + Tab               Cycle windows
-Super + Arrow             Move focus
-Super + Shift + Arrow     Move window
-Super + Left Mouse        Drag window
-Super + Right Mouse       Resize window
+Super + Arrow             Focus window in that direction
+Super + Shift + Arrow     Move/swap active window
+Super + Left Mouse        Drag active window
+Super + Right Mouse       Resize active window
 
 WORKSPACES
 Super + 1…9               Switch workspace
