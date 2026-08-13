@@ -38,6 +38,7 @@ Play/Next/Previous keys   Control media playback
 
 WAYBAR
 Click the Fedora icon     App launcher
+Click the clock           Open calendar
 Click audio/network/BT    Open its control panel
 Click the moon icon       Prevent/allow idle sleep
 Click ?                   This guide

@@ -98,6 +98,7 @@
     "interval": 1,
     "format": "{:%a  %b %d   %H:%M}",
     "format-alt": "{:%Y-%m-%d   %H:%M:%S}",
+    "on-click": "env GTK_THEME=Adwaita:dark zenity --calendar --title=Calendar --width=340 --height=300",
     "tooltip-format": "<tt><small>{calendar}</small></tt>",
     "calendar": {
       "mode": "month",

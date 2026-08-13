@@ -156,8 +156,14 @@ tooltip label {
 }
 
 #clock {
+  color: @muted;
+  background: transparent;
+  font-weight: 500;
+}
+
+#clock:hover {
   color: @text;
-  border-bottom: 2px solid @violet;
+  background: rgba(110, 231, 250, 0.08);
 }
 
 #tray {

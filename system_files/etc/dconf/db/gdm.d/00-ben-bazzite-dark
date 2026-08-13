@@ -6,8 +6,8 @@ font-name='Roboto 11'
 document-font-name='Roboto 11'
 
 [org/gnome/desktop/background]
-picture-uri='file:///usr/share/backgrounds/ben-bazzite/aurora-glass.png'
-picture-uri-dark='file:///usr/share/backgrounds/ben-bazzite/aurora-glass.png'
+picture-uri='file:///usr/share/backgrounds/ben-bazzite/aurora-glass-gdm.png'
+picture-uri-dark='file:///usr/share/backgrounds/ben-bazzite/aurora-glass-gdm.png'
 picture-options='zoom'
 primary-color='#050713'
 secondary-color='#111930'

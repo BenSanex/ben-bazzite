@@ -47,8 +47,10 @@ dnf5 -y copr enable erikreider/swayosd
 dnf5 install -y swayosd
 dnf5 -y copr disable erikreider/swayosd
 
-# Fail the image build if the compositor, portal, or GDM session entry is lost.
+# Fail the image build if either desktop session, the compositor, or the
+# portal is lost. GDM will offer both GNOME and Hyprland at sign-in.
 test -x /usr/bin/start-hyprland
+test -x /usr/bin/gnome-session
 test -x /usr/bin/ghostty
 test -x /usr/bin/hyprpaper
 test -x /usr/bin/hyprlock
@@ -62,25 +64,21 @@ test -x /usr/bin/gtk-launch
 test -x /usr/bin/notify-send
 test -x /usr/bin/playerctl
 test -x /usr/bin/slurp
+test -x /usr/bin/zenity
 test -x /usr/bin/swayosd-client
 test -x /usr/bin/swayosd-server
 test -x /usr/bin/wl-copy
 test -x /usr/libexec/xdg-desktop-portal-hyprland
 test -f /usr/share/wayland-sessions/hyprland.desktop
 grep -q '^Exec=/usr/bin/start-hyprland$' /usr/share/wayland-sessions/hyprland.desktop
+test -f /usr/share/wayland-sessions/gnome.desktop
+grep -q '^Name=GNOME$' /usr/share/wayland-sessions/gnome.desktop
+grep -q '^Exec=/usr/bin/gnome-session$' /usr/share/wayland-sessions/gnome.desktop
 
 # Apply image-owned files after RPM installation so the maintained Ben Bazzite
 # fallback config replaces Hyprland's packaged example.
 cp -avf "/ctx/system_files"/. /
 
-# GNOME 50's greeter defaults must remain in the GDM profile. Derive our
-# profile from the vendor version on every build, then place the Ben OS
-# database before the vendor defaults because dconf gives earlier databases
-# higher precedence.
-cp /usr/share/dconf/profile/gdm /etc/dconf/profile/gdm
-sed -i \
-    '\|^file-db:/usr/share/gdm/greeter-dconf-defaults$|i system-db:ben-gdm' \
-    /etc/dconf/profile/gdm
 chmod 0755 \
     /usr/bin/ben-bazzite-hyprland-apply \
     /usr/libexec/ben-bazzite/dark-theme \
@@ -91,6 +89,7 @@ chmod 0755 \
 grep -q 'local terminal = "ghostty"' /usr/share/hypr/hyprland.lua
 grep -q 'hyprland.start' /usr/share/hypr/hyprland.lua
 test -f /usr/share/backgrounds/ben-bazzite/aurora-glass.png
+test -f /usr/share/backgrounds/ben-bazzite/aurora-glass-gdm.png
 test -f /etc/ben-bazzite/ben-os-gdm-logo.png
 test -f /etc/xdg/waybar/config.jsonc
 test -f /etc/xdg/gtk-3.0/settings.ini
@@ -100,18 +99,21 @@ test -f /etc/xdg/xdg-desktop-portal/hyprland-portals.conf
 test -f /etc/dconf/profile/user
 test -f /usr/lib/systemd/user/ben-bazzite-hyprland-session.target
 test -f /usr/share/themes/adw-gtk3-dark/index.theme
+test ! -e /etc/dconf/profile/gdm
 grep -Fxq 'file-db:/usr/share/gdm/greeter-dconf-defaults' \
-    /etc/dconf/profile/gdm
-test "$(grep -nFx 'system-db:ben-gdm' /etc/dconf/profile/gdm | cut -d: -f1)" \
-    -lt \
-    "$(grep -nFx 'file-db:/usr/share/gdm/greeter-dconf-defaults' \
-        /etc/dconf/profile/gdm | cut -d: -f1)"
+    /usr/share/dconf/profile/gdm
 grep -Fxq "logo='/etc/ben-bazzite/ben-os-gdm-logo.png'" \
-    /etc/dconf/db/ben-gdm.d/00-ben-bazzite-dark
+    /etc/dconf/db/gdm.d/00-ben-bazzite-dark
 grep -q '^org.freedesktop.impl.portal.Settings=gtk$' \
     /etc/xdg/xdg-desktop-portal/hyprland-portals.conf
 fc-match Roboto | grep -qi 'Roboto'
 dconf update
+test "$(DCONF_PROFILE=/usr/share/dconf/profile/gdm \
+    dconf read /org/gnome/desktop/background/picture-uri)" = \
+    "'file:///usr/share/backgrounds/ben-bazzite/aurora-glass-gdm.png'"
+test "$(DCONF_PROFILE=/usr/share/dconf/profile/gdm \
+    dconf read /org/gnome/login-screen/logo)" = \
+    "'/etc/ben-bazzite/ben-os-gdm-logo.png'"
 install -d -m 0700 -o nobody -g nobody /tmp/hypr-verify
 install -d -m 0700 -o nobody -g nobody /tmp/theme-verify
 test -x /usr/bin/setpriv
