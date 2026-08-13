@@ -88,6 +88,9 @@ test -f /etc/xdg/ghostty/config
 test -f /etc/xdg/xdg-desktop-portal/hyprland-portals.conf
 test -f /etc/dconf/profile/user
 test -f /usr/share/themes/adw-gtk3-dark/index.theme
+test ! -e /etc/dconf/profile/gdm
+grep -Fxq 'file-db:/usr/share/gdm/greeter-dconf-defaults' \
+    /usr/share/dconf/profile/gdm
 grep -q '^org.freedesktop.impl.portal.Settings=gtk$' \
     /etc/xdg/xdg-desktop-portal/hyprland-portals.conf
 fc-match Roboto | grep -qi 'Roboto'
