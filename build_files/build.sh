@@ -72,6 +72,12 @@ grep -q '^Exec=/usr/bin/start-hyprland$' /usr/share/wayland-sessions/hyprland.de
 # Apply image-owned files after RPM installation so the maintained Ben Bazzite
 # fallback config replaces Hyprland's packaged example.
 cp -avf "/ctx/system_files"/. /
+
+# GNOME 50's greeter defaults must remain in the GDM profile, but they also
+# override the normal gdm database's background. Derive our profile from the
+# vendor version on every build, then give the Ben OS database final priority.
+cp /usr/share/dconf/profile/gdm /etc/dconf/profile/gdm
+printf '\nsystem-db:ben-gdm\n' >> /etc/dconf/profile/gdm
 chmod 0755 \
     /usr/bin/ben-bazzite-hyprland-apply \
     /usr/libexec/ben-bazzite/dark-theme \
@@ -91,11 +97,11 @@ test -f /etc/xdg/xdg-desktop-portal/hyprland-portals.conf
 test -f /etc/dconf/profile/user
 test -f /usr/lib/systemd/user/ben-bazzite-hyprland-session.target
 test -f /usr/share/themes/adw-gtk3-dark/index.theme
-test ! -e /etc/dconf/profile/gdm
 grep -Fxq 'file-db:/usr/share/gdm/greeter-dconf-defaults' \
-    /usr/share/dconf/profile/gdm
+    /etc/dconf/profile/gdm
+test "$(tail -n 1 /etc/dconf/profile/gdm)" = 'system-db:ben-gdm'
 grep -Fxq "logo='/etc/ben-bazzite/ben-os-gdm-logo.png'" \
-    /etc/dconf/db/gdm.d/00-ben-bazzite-dark
+    /etc/dconf/db/ben-gdm.d/00-ben-bazzite-dark
 grep -q '^org.freedesktop.impl.portal.Settings=gtk$' \
     /etc/xdg/xdg-desktop-portal/hyprland-portals.conf
 fc-match Roboto | grep -qi 'Roboto'
