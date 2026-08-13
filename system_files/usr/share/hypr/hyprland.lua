@@ -100,6 +100,11 @@ hl.config({
         close_special_on_empty = true,
         initial_workspace_tracking = 1,
     },
+    -- Fractional desktop scaling otherwise makes XWayland games see only the
+    -- logical 1600x1000 canvas instead of this panel's native 2560x1600 mode.
+    xwayland = {
+        force_zero_scaling = true,
+    },
 })
 
 hl.curve("benEase", {

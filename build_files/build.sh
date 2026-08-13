@@ -112,6 +112,7 @@ grep -q 'local terminal = "ghostty"' /usr/share/hypr/hyprland.lua
 grep -q 'local launcher = "dms ipc call spotlight toggle"' \
     /usr/share/hypr/hyprland.lua
 grep -q 'hyprland.start' /usr/share/hypr/hyprland.lua
+grep -q 'force_zero_scaling = true' /usr/share/hypr/hyprland.lua
 grep -Fxq 'Exec=/usr/bin/ben-bazzite-hyprland-session' \
     /usr/share/wayland-sessions/hyprland.desktop
 grep -Fq -- '--config /usr/share/hypr/hyprland.lua' \
