@@ -12,12 +12,9 @@ wallpaper="/usr/share/backgrounds/ben-bazzite/aurora-glass.png"
 settings_file="${config_root}/settings.json"
 
 if ! dms run -d; then
-    notify-send \
-        "Ben OS shell" \
-        "Quickshell could not start; loading the fallback desktop bar."
-    waybar &
-    mako --config /etc/xdg/mako/config &
-    swayosd-server &
+    zenity --error \
+        --title="Ben OS shell" \
+        --text="Quickshell could not start. Press Super+Shift+Escape to return to GDM, then choose GNOME." &
     exit 1
 fi
 

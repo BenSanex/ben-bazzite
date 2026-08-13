@@ -30,6 +30,7 @@ Super + Shift + S         Send window to scratchpad
 SESSION
 Super + L                 Lock
 Super + Shift + E         Power/session menu
+Super + Shift + Escape    Exit to GDM / GNOME chooser
 
 SCREENSHOTS
 Print                     Select a region

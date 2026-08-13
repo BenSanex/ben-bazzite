@@ -26,9 +26,6 @@ dnf5 install -y \
     hypridle \
     hyprpolkitagent \
     hyprshutdown \
-    waybar \
-    fuzzel \
-    mako \
     libnotify \
     playerctl \
     slurp \
@@ -37,15 +34,8 @@ dnf5 install -y \
     pavucontrol \
     blueman \
     network-manager-applet \
-    wlogout \
     xdg-desktop-portal-hyprland
 dnf5 -y copr disable lionheartp/Hyprland
-
-# SwayOSD's upstream Fedora package provides native volume and brightness
-# feedback. Keep its COPR enabled only for the installation transaction.
-dnf5 -y copr enable erikreider/swayosd
-dnf5 install -y swayosd
-dnf5 -y copr disable erikreider/swayosd
 
 # DankMaterialShell supplies the Quickshell bar, launcher, notifications, OSD,
 # and quick controls. Its stable COPR declares the matching DankLinux runtime
@@ -70,26 +60,21 @@ test -x /usr/bin/gnome-session
 test -x /usr/bin/gnome-control-center
 test -x /usr/bin/dms
 test -x /usr/bin/qs
-grep -q 'return "CPU " + value.toFixed(0) + "%"' \
+grep -Fq 'return "CPU " + value.toFixed(0) + "%";' \
     /usr/share/quickshell/dms/Modules/Plugins/BasePill.qml
-grep -q 'item.widgetId = widgetId' \
+grep -Fq 'item.widgetId = widgetId;' \
     /usr/share/quickshell/dms/Modules/DankBar/WidgetHost.qml
 test -x /usr/bin/ghostty
 test -x /usr/bin/hyprpaper
 test -x /usr/bin/hyprlock
 test -x /usr/bin/hypridle
 test -x /usr/bin/hyprshutdown
-test -x /usr/bin/waybar
-test -x /usr/bin/fuzzel
-test -x /usr/bin/wlogout
 test -x /usr/bin/grim
 test -x /usr/bin/gtk-launch
 test -x /usr/bin/notify-send
 test -x /usr/bin/playerctl
 test -x /usr/bin/slurp
 test -x /usr/bin/zenity
-test -x /usr/bin/swayosd-client
-test -x /usr/bin/swayosd-server
 test -x /usr/bin/wl-copy
 test -x /usr/libexec/xdg-desktop-portal-hyprland
 test -f /usr/share/wayland-sessions/hyprland.desktop
@@ -134,7 +119,6 @@ test -f /usr/share/ben-bazzite/dms-theme.json
 test -f /etc/xdg/quickshell/dms-plugins/benOsHelp/plugin.json
 test -f /etc/xdg/quickshell/dms-plugins/benOsHelp/BenOsHelp.qml
 test -f /etc/ben-bazzite/ben-os-gdm-logo.png
-test -f /etc/xdg/waybar/config.jsonc
 test -f /etc/xdg/gtk-3.0/settings.ini
 test -f /etc/xdg/gtk-4.0/settings.ini
 test -f /etc/xdg/ghostty/config
@@ -176,17 +160,11 @@ setpriv --reuid=nobody --regid=nobody --clear-groups env \
     /usr/bin/ben-bazzite-hyprland-apply
 cmp -s /usr/share/hypr/hyprland.lua \
     /tmp/hypr-verify/config/hypr/hyprland.lua
-cmp -s /etc/xdg/waybar/config.jsonc \
-    /tmp/hypr-verify/config/waybar/config.jsonc
-cmp -s /etc/xdg/waybar/style.css \
-    /tmp/hypr-verify/config/waybar/style.css
 setpriv --reuid=nobody --regid=nobody --clear-groups env \
     HOME=/tmp/hypr-verify \
     XDG_RUNTIME_DIR=/tmp/hypr-verify \
     Hyprland --verify-config -c /usr/share/hypr/hyprland.lua
-LC_ALL=C.UTF-8 fuzzel --config=/etc/xdg/fuzzel/fuzzel.ini --check-config
 XDG_CONFIG_HOME=/etc/xdg ghostty +show-config --changes-only >/dev/null
-jq empty /etc/xdg/waybar/config.jsonc
 jq -e '.name == "Ben OS Aurora" and .primary == "#6ee7fa"
     and .secondary == "#9b7bff" and .error == "#ff7a90"' \
     /usr/share/ben-bazzite/dms-theme.json >/dev/null

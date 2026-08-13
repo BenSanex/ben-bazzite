@@ -32,18 +32,9 @@ install_config \
     /usr/share/hypr/hyprland.lua \
     "${config_home}/hypr/hyprland.lua" \
     Hyprland
-install_config \
-    /etc/xdg/waybar/config.jsonc \
-    "${config_home}/waybar/config.jsonc" \
-    Waybar
-install_config \
-    /etc/xdg/waybar/style.css \
-    "${config_home}/waybar/style.css" \
-    "Waybar style"
 
 if [[ "${changed}" == true ]]; then
-    pkill -SIGUSR2 -x waybar 2>/dev/null || :
-    echo "Applied the Ben Bazzite desktop configuration."
+    echo "Applied the Ben Bazzite Hyprland configuration."
 else
-    echo "The complete Ben Bazzite desktop configuration is already active."
+    echo "The Ben Bazzite Hyprland configuration is already active."
 fi
