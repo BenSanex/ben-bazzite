@@ -51,8 +51,8 @@ if [[ ! -e "${theme_marker}" ]]; then
         innerPadding: 4,
         barInsetPadding: 10,
         bottomGap: 8,
-        transparency: 0.72,
-        widgetTransparency: 0.42,
+        transparency: 0.30,
+        widgetTransparency: 0.14,
         squareCorners: false,
         noBackground: false,
         maximizeWidgetIcons: false,
@@ -66,7 +66,7 @@ if [[ ! -e "${theme_marker}" ]]; then
         borderThickness: 1,
         widgetOutlineEnabled: true,
         widgetOutlineColor: "secondary",
-        widgetOutlineOpacity: 0.16,
+        widgetOutlineOpacity: 0.10,
         widgetOutlineThickness: 1,
         fontScale: 1.0,
         iconScale: 1.0,
@@ -84,7 +84,7 @@ if [[ ! -e "${theme_marker}" ]]; then
         shadowColorMode: "custom",
         shadowCustomColor: "#050713",
         clickThrough: false,
-        hoverPopouts: true,
+        hoverPopouts: false,
         hoverPopoutDelay: 220
     }]')"
 
@@ -92,7 +92,7 @@ if [[ ! -e "${theme_marker}" ]]; then
         && dms ipc call settings set currentThemeName custom >/dev/null 2>&1 \
         && dms ipc call settings set widgetBackgroundColor custom >/dev/null 2>&1 \
         && dms ipc call settings set widgetBackgroundCustomColor '#111930' >/dev/null 2>&1 \
-        && dms ipc call settings set widgetBackgroundCustomStrength 0.72 >/dev/null 2>&1 \
+        && dms ipc call settings set widgetBackgroundCustomStrength 0.38 >/dev/null 2>&1 \
         && dms ipc call settings set popupTransparency 0.82 >/dev/null 2>&1 \
         && dms ipc call settings set blurEnabled true >/dev/null 2>&1 \
         && dms ipc call settings set blurForegroundLayers false >/dev/null 2>&1 \
