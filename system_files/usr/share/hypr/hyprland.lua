@@ -85,6 +85,10 @@ hl.config({
     dwindle = {
         preserve_split = true,
         smart_split = false,
+        -- Half of an ultrawide display can still be wider than it is tall.
+        -- Bias the automatic split so the next window stacks top/bottom in
+        -- that half instead of producing a third full-height column.
+        split_width_multiplier = 0.75,
     },
     misc = {
         disable_hyprland_logo = true,
@@ -142,14 +146,14 @@ hl.bind("SUPER + S", hl.dsp.workspace.toggle_special("scratch"))
 hl.bind("SUPER + SHIFT + S", hl.dsp.window.move({ workspace = "special:scratch" }))
 
 -- Focus and window movement.
-hl.bind("SUPER + LEFT", hl.dsp.focus({ direction = "l" }))
-hl.bind("SUPER + RIGHT", hl.dsp.focus({ direction = "r" }))
-hl.bind("SUPER + UP", hl.dsp.focus({ direction = "u" }))
-hl.bind("SUPER + DOWN", hl.dsp.focus({ direction = "d" }))
-hl.bind("SUPER + SHIFT + LEFT", hl.dsp.window.move({ direction = "l" }))
-hl.bind("SUPER + SHIFT + RIGHT", hl.dsp.window.move({ direction = "r" }))
-hl.bind("SUPER + SHIFT + UP", hl.dsp.window.move({ direction = "u" }))
-hl.bind("SUPER + SHIFT + DOWN", hl.dsp.window.move({ direction = "d" }))
+hl.bind("SUPER + LEFT", hl.dsp.window.move({ direction = "l" }))
+hl.bind("SUPER + RIGHT", hl.dsp.window.move({ direction = "r" }))
+hl.bind("SUPER + UP", hl.dsp.window.move({ direction = "u" }))
+hl.bind("SUPER + DOWN", hl.dsp.window.move({ direction = "d" }))
+hl.bind("SUPER + SHIFT + LEFT", hl.dsp.focus({ direction = "l" }))
+hl.bind("SUPER + SHIFT + RIGHT", hl.dsp.focus({ direction = "r" }))
+hl.bind("SUPER + SHIFT + UP", hl.dsp.focus({ direction = "u" }))
+hl.bind("SUPER + SHIFT + DOWN", hl.dsp.focus({ direction = "d" }))
 hl.bind("SUPER + TAB", hl.dsp.window.cycle_next({ next = true }))
 hl.bind("SUPER + mouse:272", hl.dsp.window.drag(), { mouse = true })
 hl.bind("SUPER + mouse:273", hl.dsp.window.resize(), { mouse = true })

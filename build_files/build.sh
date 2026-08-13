@@ -73,11 +73,14 @@ grep -q '^Exec=/usr/bin/start-hyprland$' /usr/share/wayland-sessions/hyprland.de
 # fallback config replaces Hyprland's packaged example.
 cp -avf "/ctx/system_files"/. /
 
-# GNOME 50's greeter defaults must remain in the GDM profile, but they also
-# override the normal gdm database's background. Derive our profile from the
-# vendor version on every build, then give the Ben OS database final priority.
+# GNOME 50's greeter defaults must remain in the GDM profile. Derive our
+# profile from the vendor version on every build, then place the Ben OS
+# database before the vendor defaults because dconf gives earlier databases
+# higher precedence.
 cp /usr/share/dconf/profile/gdm /etc/dconf/profile/gdm
-printf '\nsystem-db:ben-gdm\n' >> /etc/dconf/profile/gdm
+sed -i \
+    '\|^file-db:/usr/share/gdm/greeter-dconf-defaults$|i system-db:ben-gdm' \
+    /etc/dconf/profile/gdm
 chmod 0755 \
     /usr/bin/ben-bazzite-hyprland-apply \
     /usr/libexec/ben-bazzite/dark-theme \
@@ -99,7 +102,10 @@ test -f /usr/lib/systemd/user/ben-bazzite-hyprland-session.target
 test -f /usr/share/themes/adw-gtk3-dark/index.theme
 grep -Fxq 'file-db:/usr/share/gdm/greeter-dconf-defaults' \
     /etc/dconf/profile/gdm
-test "$(tail -n 1 /etc/dconf/profile/gdm)" = 'system-db:ben-gdm'
+test "$(grep -nFx 'system-db:ben-gdm' /etc/dconf/profile/gdm | cut -d: -f1)" \
+    -lt \
+    "$(grep -nFx 'file-db:/usr/share/gdm/greeter-dconf-defaults' \
+        /etc/dconf/profile/gdm | cut -d: -f1)"
 grep -Fxq "logo='/etc/ben-bazzite/ben-os-gdm-logo.png'" \
     /etc/dconf/db/ben-gdm.d/00-ben-bazzite-dark
 grep -q '^org.freedesktop.impl.portal.Settings=gtk$' \
