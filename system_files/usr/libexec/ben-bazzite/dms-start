@@ -11,12 +11,18 @@ theme_file="/usr/share/ben-bazzite/dms-theme.json"
 wallpaper="/usr/share/backgrounds/ben-bazzite/aurora-glass.png"
 settings_file="${config_root}/settings.json"
 
-if ! dms run -d; then
-    zenity --error \
-        --title="Ben OS shell" \
-        --text="Quickshell could not start. Press Super+Shift+Escape to return to the login screen." &
-    exit 1
-fi
+# Keep DMS attached to this process so systemd can supervise and restart the
+# shell if Quickshell exits. Theme setup below runs alongside the foreground
+# shell and then this wrapper waits for it for the rest of the session.
+dms run --session &
+dms_pid=$!
+needs_restart=false
+
+stop_dms() {
+    kill "${dms_pid}" 2>/dev/null || true
+}
+trap stop_dms EXIT
+trap 'stop_dms; exit 143' TERM INT
 
 if [[ ! -e "${theme_marker}" ]]; then
     install -d -m 0700 "${state_root}"
@@ -28,6 +34,10 @@ if [[ ! -e "${theme_marker}" ]]; then
         if dms ipc call settings get barConfigs >/dev/null 2>&1; then
             sleep 1
             break
+        fi
+        if ! kill -0 "${dms_pid}" 2>/dev/null; then
+            wait "${dms_pid}"
+            exit $?
         fi
         sleep 0.1
     done
@@ -114,16 +124,9 @@ if [[ ! -e "${theme_marker}" ]]; then
             "${settings_file}" >"${settings_tmp}"; then
             chmod 0600 "${settings_tmp}"
             mv -f "${settings_tmp}" "${settings_file}"
-            # DMS watches writes to the existing file but an atomic rename can
-            # retain the old in-memory object. Reload only the shell so a new
-            # user sees the glass layout during this same login.
-            dms restart >/dev/null 2>&1 || true
-            for _ in {1..50}; do
-                if dms ipc call settings get barConfigs >/dev/null 2>&1; then
-                    break
-                fi
-                sleep 0.1
-            done
+            # An atomic rename can retain the old in-memory object. Ask the
+            # supervising unit for one clean restart after setup completes.
+            needs_restart=true
         else
             rm -f "${settings_tmp}"
             notify-send \
@@ -141,10 +144,12 @@ fi
 
 # System-plugin discovery is asynchronous and enable is idempotent. Give it a
 # short window so the help pill appears on the first login after an update.
+plugin_loaded=false
 for _ in {1..50}; do
     plugin_status="$(dms ipc call plugins status benOsHelp 2>/dev/null || true)"
     if [[ "${plugin_status}" == loaded ]]; then
-        exit 0
+        plugin_loaded=true
+        break
     fi
     if [[ "${plugin_status}" == disabled ]]; then
         dms ipc call plugins enable benOsHelp >/dev/null 2>&1 || true
@@ -152,6 +157,20 @@ for _ in {1..50}; do
     sleep 0.1
 done
 
-notify-send \
-    "Ben OS shell" \
-    "Aurora glass is active, but the keyboard-help widget could not be loaded."
+if [[ "${plugin_loaded}" != true ]]; then
+    notify-send \
+        "Ben OS shell" \
+        "Aurora glass is active, but the keyboard-help widget could not be loaded."
+fi
+
+if [[ "${needs_restart}" == true ]]; then
+    stop_dms
+    wait "${dms_pid}" 2>/dev/null || true
+    trap - EXIT TERM INT
+    exit 1
+fi
+
+wait "${dms_pid}"
+dms_status=$?
+trap - EXIT TERM INT
+exit "${dms_status}"

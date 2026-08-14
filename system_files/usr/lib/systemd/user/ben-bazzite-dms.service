@@ -1,0 +1,14 @@
+[Unit]
+Description=Ben Bazzite desktop shell
+Documentation=https://danklinux.com/docs/dankmaterialshell/
+PartOf=ben-bazzite-hyprland-session.target
+After=graphical-session-pre.target
+
+[Service]
+Type=simple
+ExecStart=/usr/libexec/ben-bazzite/dms-start
+Restart=on-failure
+RestartSec=2s
+
+[Install]
+WantedBy=ben-bazzite-hyprland-session.target
