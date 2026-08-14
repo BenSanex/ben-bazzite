@@ -14,7 +14,7 @@ settings_file="${config_root}/settings.json"
 if ! dms run -d; then
     zenity --error \
         --title="Ben OS shell" \
-        --text="Quickshell could not start. Press Super+Shift+Escape to return to GDM, then choose GNOME." &
+        --text="Quickshell could not start. Press Super+Shift+Escape to return to the login screen." &
     exit 1
 fi
 

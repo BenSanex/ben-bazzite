@@ -76,7 +76,7 @@ diff --git a/Modules/Plugins/BasePill.qml b/Modules/Plugins/BasePill.qml
                  const baseColor = isHovered ? BlurService.hoverColor(Theme.widgetBaseHoverColor) : Theme.widgetBaseBackgroundColor;
  
                  if (Theme.widgetBackgroundHasAlpha) {
-@@ -171,6 +223,29 @@ Item {
+@@ -171,6 +223,33 @@ Item {
          }
      }
  
@@ -95,7 +95,11 @@ diff --git a/Modules/Plugins/BasePill.qml b/Modules/Plugins/BasePill.qml
 +        repeat: false
 +        onTriggered: {
 +            const side = root.axis?.edge === "bottom" ? "top" : (root.axis?.edge === "left" ? "right" : (root.axis?.edge === "right" ? "left" : "bottom"));
-+            pillTooltip.show(root.currentTooltipText(), root, 0, 0, side);
++            // Keep the popup clear of the pointer. DankTooltipV2 already adds
++            // 8 px; this directional offset makes the total gap 20 px.
++            const offsetX = side === "left" ? -12 : (side === "right" ? 12 : 0);
++            const offsetY = side === "top" ? -12 : (side === "bottom" ? 12 : 0);
++            pillTooltip.show(root.currentTooltipText(), root, offsetX, offsetY, side);
 +        }
 +    }
 +

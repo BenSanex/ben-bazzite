@@ -1,6 +1,7 @@
 #!/bin/bash
-exec env GTK_THEME=Adwaita:dark zenity --text-info \
+exec env GTK_THEME=BenBazziteShortcuts zenity --text-info \
     --title="Ben Bazzite shortcuts" \
-    --width=620 \
-    --height=650 \
+    --width=680 \
+    --height=720 \
+    --font="Roboto 11" \
     --filename=/usr/share/doc/ben-bazzite/hyprland-keybinds.txt

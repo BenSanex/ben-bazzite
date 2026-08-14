@@ -1,0 +1,65 @@
+@define-color window_bg_color rgba(9, 14, 24, 0.94);
+@define-color window_fg_color #e8eef8;
+@define-color view_bg_color rgba(12, 19, 31, 0.92);
+@define-color view_fg_color #e8eef8;
+@define-color headerbar_bg_color rgba(15, 24, 39, 0.96);
+@define-color headerbar_fg_color #f5f8ff;
+@define-color accent_bg_color #63d9ee;
+@define-color accent_fg_color #071018;
+@define-color borders rgba(110, 231, 250, 0.48);
+
+window,
+dialog {
+    background-color: @window_bg_color;
+    color: @window_fg_color;
+}
+
+headerbar {
+    background-image: none;
+    background-color: @headerbar_bg_color;
+    color: @headerbar_fg_color;
+    border-bottom: 1px solid rgba(110, 231, 250, 0.24);
+    box-shadow: none;
+}
+
+textview,
+textview text {
+    background-color: @view_bg_color;
+    color: @view_fg_color;
+    caret-color: #6ee7fa;
+}
+
+textview {
+    padding: 18px;
+}
+
+scrolledwindow {
+    margin: 12px;
+    border: 1px solid rgba(110, 231, 250, 0.28);
+    border-radius: 12px;
+    background-color: @view_bg_color;
+}
+
+button {
+    min-height: 34px;
+    margin: 6px;
+    padding: 4px 18px;
+    color: #e8eef8;
+    background-image: none;
+    background-color: rgba(31, 45, 66, 0.92);
+    border: 1px solid rgba(110, 231, 250, 0.24);
+    border-radius: 9px;
+    box-shadow: none;
+}
+
+button:hover {
+    background-color: rgba(51, 72, 100, 0.96);
+    border-color: rgba(110, 231, 250, 0.68);
+}
+
+button:checked,
+button:active,
+button.suggested-action {
+    color: @accent_fg_color;
+    background-color: @accent_bg_color;
+}

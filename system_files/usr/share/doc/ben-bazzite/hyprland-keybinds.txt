@@ -14,6 +14,9 @@ Super + Q                 Close window
 Super + F                 Fullscreen
 Super + Space             Toggle floating
 Super + P                 Toggle pseudotile
+Super + V                 Next split vertical (side by side)
+Super + H                 Next split horizontal (top/bottom)
+Super + T                 Flip the current split orientation
 Super + Tab               Cycle windows
 Super + Arrow             Move/swap active window
 Super + Shift + Arrow     Focus window in that direction
@@ -30,7 +33,7 @@ Super + Shift + S         Send window to scratchpad
 SESSION
 Super + L                 Lock
 Super + Shift + E         Power/session menu
-Super + Shift + Escape    Exit to GDM / GNOME chooser
+Super + Shift + Escape    Exit to the login screen
 
 SCREENSHOTS
 Print                     Select a region

@@ -125,9 +125,43 @@ hl.animation({ leaf = "layers", enabled = true, speed = 3.5, bezier = "benEase",
 
 hl.layer_rule({ match = { namespace = "dms" }, blur = true })
 
+-- EVE's Electron launcher runs through Proton/XWayland. Tiling or honoring its
+-- maximize request makes Wine account for a phantom frame: the launcher draws
+-- below it while pointer events remain offset. Keep only the launcher at its
+-- requested size; EVE game-client windows have different initial titles and
+-- continue to tile/fullscreen normally.
+hl.window_rule({
+    name = "eve-launcher-frame-fix",
+    match = {
+        initial_class = "steam_app_8500",
+        initial_title = "(EVE Online|EVE Launcher)",
+        xwayland = true,
+    },
+    float = true,
+    center = true,
+    suppress_event = "maximize",
+    decorate = false,
+    border_size = 0,
+    rounding = 0,
+})
+
+-- Keep the shortcut reference compact instead of letting the tiler stretch a
+-- small text dialog across an entire split. Its dedicated GTK theme supplies
+-- the translucent charcoal surface without changing unrelated applications.
+hl.window_rule({
+    name = "shortcut-guide-dialog",
+    match = {
+        title = "Ben Bazzite shortcuts",
+    },
+    float = true,
+    center = true,
+    size = "680 720",
+})
+
 hl.on("hyprland.start", function()
     hl.exec_cmd("/usr/libexec/ben-bazzite/session-start")
     hl.exec_cmd("/usr/libexec/ben-bazzite/dark-theme")
+    hl.exec_cmd("/usr/libexec/ben-bazzite/eve-launcher-fix")
     hl.exec_cmd("hyprpaper -c /usr/share/hypr/hyprpaper.conf")
     hl.exec_cmd("/usr/libexec/ben-bazzite/dms-start")
     hl.exec_cmd("hypridle -c /usr/share/hypr/hypridle.conf")
@@ -149,6 +183,11 @@ hl.bind("SUPER + Q", hl.dsp.window.close())
 hl.bind("SUPER + F", hl.dsp.window.fullscreen({ mode = "fullscreen" }))
 hl.bind("SUPER + SPACE", hl.dsp.window.float())
 hl.bind("SUPER + P", hl.dsp.window.pseudo())
+-- Choose the orientation of the next split, or flip the current split.
+-- "Vertical" means a vertical divider (windows side by side).
+hl.bind("SUPER + V", hl.dsp.layout("preselect r"))
+hl.bind("SUPER + H", hl.dsp.layout("preselect d"))
+hl.bind("SUPER + T", hl.dsp.layout("togglesplit"))
 hl.bind("SUPER + S", hl.dsp.workspace.toggle_special("scratch"))
 hl.bind("SUPER + SHIFT + S", hl.dsp.window.move({ workspace = "special:scratch" }))
 

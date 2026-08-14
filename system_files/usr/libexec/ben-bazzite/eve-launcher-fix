@@ -1,0 +1,19 @@
+#!/bin/bash
+# Keep EVE's Wine-managed frame out of the Electron launcher. The frame shifts
+# the launcher's content and pointer coordinates by its title-bar height.
+set -eu
+
+steam_data="${XDG_DATA_HOME:-${HOME}/.local/share}/Steam"
+eve_prefix="${steam_data}/steamapps/compatdata/8500/pfx"
+user_registry="${eve_prefix}/user.reg"
+
+# EVE may not be installed for this user, and an already-correct prefix needs
+# no Wine startup on login.
+[[ -f "${user_registry}" ]] || exit 0
+grep -Fq '"Decorated"="n"' "${user_registry}" && exit 0
+command -v protontricks >/dev/null 2>&1 || exit 0
+
+if ! protontricks 8500 windowmanagerdecorated=n >/dev/null 2>&1; then
+    logger -t ben-bazzite \
+        "Could not disable Wine window decorations for the EVE Online prefix."
+fi

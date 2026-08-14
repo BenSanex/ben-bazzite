@@ -44,6 +44,24 @@ dnf5 -y copr enable avengemedia/dms
 dnf5 install -y dms
 dnf5 -y copr disable avengemedia/dms
 
+# Hyprland is the only user desktop. Keep GDM as the graphical greeter and
+# retain the shared GTK, keyring, portal, and Nautilus components it relies on,
+# but discard GNOME-only accessories that are not part of the login path.
+dnf5 remove -y \
+    gnome-backgrounds \
+    gnome-browser-connector \
+    gnome-remote-desktop \
+    gnome-shell-extension-common \
+    gnome-shell-extension-gsconnect \
+    gnome-shell-extension-user-theme \
+    gnome-user-docs \
+    gnome-user-share \
+    nautilus-gsconnect
+
+# Fedora's GDM package depends on the GNOME session RPM even when GNOME is not
+# offered as a desktop. Remove its launcher rather than breaking the greeter.
+rm -f /usr/share/wayland-sessions/gnome.desktop
+
 # Add concise, live-data tooltips to every shared DMS bar pill and make the
 # hover highlight distinct from the deliberately transparent idle surface.
 # Applying this as a checked patch lets upstream drift fail the build instead
@@ -53,11 +71,10 @@ git apply \
     --directory=/usr/share/quickshell/dms \
     /ctx/dms-tooltips.patch
 
-# Fail the image build if either desktop session, the compositor, or the
-# portal is lost. GDM will offer both GNOME and Hyprland at sign-in.
+# Fail the image build if the Hyprland desktop, greeter, or portal is lost.
+# GNOME's shared runtime remains only where Fedora's GDM packaging requires it.
 test -x /usr/bin/start-hyprland
-test -x /usr/bin/gnome-session
-test -x /usr/bin/gnome-control-center
+test -x /usr/sbin/gdm
 test -x /usr/bin/dms
 test -x /usr/bin/qs
 grep -Fq '"CPU " + value.toFixed(0) + "%";' \
@@ -77,13 +94,9 @@ test -x /usr/bin/slurp
 test -x /usr/bin/zenity
 test -x /usr/bin/wl-copy
 test -x /usr/libexec/xdg-desktop-portal-hyprland
-test -f /usr/share/wayland-sessions/gnome.desktop
-grep -q '^Name=GNOME$' /usr/share/wayland-sessions/gnome.desktop
-grep -q '^Exec=/usr/bin/gnome-session$' /usr/share/wayland-sessions/gnome.desktop
-settings_panels="$(env XDG_CURRENT_DESKTOP=GNOME gnome-control-center --list)"
-for settings_panel in wifi bluetooth sound; do
-    grep -Eq "^[[:space:]]+${settings_panel}$" <<<"${settings_panels}"
-done
+test ! -e /usr/share/wayland-sessions/gnome.desktop
+test -x /usr/bin/nautilus
+test -x /usr/bin/gnome-keyring-daemon
 
 # Apply image-owned files after RPM installation so the maintained Ben Bazzite
 # fallback config replaces Hyprland's packaged example.
@@ -104,6 +117,7 @@ chmod 0755 \
     /usr/bin/ben-bazzite-hyprland-session \
     /usr/libexec/ben-bazzite/dark-theme \
     /usr/libexec/ben-bazzite/dms-start \
+    /usr/libexec/ben-bazzite/eve-launcher-fix \
     /usr/libexec/ben-bazzite/keybinds \
     /usr/libexec/ben-bazzite/session-start \
     /usr/libexec/ben-bazzite/scratchpad-status \
@@ -113,6 +127,9 @@ grep -q 'local launcher = "dms ipc call spotlight toggle"' \
     /usr/share/hypr/hyprland.lua
 grep -q 'hyprland.start' /usr/share/hypr/hyprland.lua
 grep -q 'force_zero_scaling = true' /usr/share/hypr/hyprland.lua
+grep -q 'name = "eve-launcher-frame-fix"' /usr/share/hypr/hyprland.lua
+grep -q 'name = "shortcut-guide-dialog"' /usr/share/hypr/hyprland.lua
+grep -q 'hl.dsp.layout("togglesplit")' /usr/share/hypr/hyprland.lua
 grep -Fxq 'Exec=/usr/bin/ben-bazzite-hyprland-session' \
     /usr/share/wayland-sessions/hyprland.desktop
 grep -Fq -- '--config /usr/share/hypr/hyprland.lua' \
@@ -125,10 +142,12 @@ test -f /etc/xdg/quickshell/dms-plugins/benOsHelp/BenOsHelp.qml
 test -f /etc/ben-bazzite/ben-os-gdm-logo.png
 test -f /etc/xdg/gtk-3.0/settings.ini
 test -f /etc/xdg/gtk-4.0/settings.ini
+test -f /usr/share/themes/BenBazziteShortcuts/gtk-4.0/gtk.css
 test -f /etc/xdg/ghostty/config
 test -f /etc/xdg/xdg-desktop-portal/hyprland-portals.conf
 test -f /etc/dconf/profile/user
 test -f /usr/lib/systemd/user/ben-bazzite-hyprland-session.target
+test -x /usr/libexec/ben-bazzite/eve-launcher-fix
 test -f /usr/share/themes/adw-gtk3-dark/index.theme
 test ! -e /etc/dconf/profile/gdm
 test "$(sed -n '2p' /usr/share/dconf/profile/gdm)" = \
@@ -182,6 +201,7 @@ bash -n \
     /usr/bin/ben-bazzite-hyprland-session \
     /usr/libexec/ben-bazzite/dark-theme \
     /usr/libexec/ben-bazzite/dms-start \
+    /usr/libexec/ben-bazzite/eve-launcher-fix \
     /usr/libexec/ben-bazzite/keybinds \
     /usr/libexec/ben-bazzite/session-start \
     /usr/libexec/ben-bazzite/scratchpad-status \
