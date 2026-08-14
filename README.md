@@ -120,7 +120,7 @@ The full container build performs more than package installation: it verifies th
 
 ## Publishing and signing
 
-GitHub Actions builds pull requests and publishes `main` to `ghcr.io/bensanex/ben-bazzite`. Published images are signed with Cosign using the repository's `SIGNING_SECRET`.
+GitHub Actions builds and publishes `main` to `ghcr.io/bensanex/ben-bazzite`; pull requests use local checks instead of rebuilding the full image. Published images are signed with Cosign using the repository's `SIGNING_SECRET`.
 
 To rotate or recreate the signing key:
 
