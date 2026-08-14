@@ -13,4 +13,11 @@ dbus-update-activation-environment --systemd \
     XDG_SESSION_DESKTOP \
     XDG_SESSION_TYPE
 
-systemctl --user start ben-bazzite-hyprland-session.target
+# Start the shell explicitly as well as through the target dependency. Older
+# Ben Bazzite deployments could leave a copy of this target in ~/.config; a
+# user unit takes precedence over the image unit and may therefore lack the
+# newer DMS dependency. Naming both units keeps upgraded sessions functional,
+# while PartOf= on the service still ties its lifetime to the session target.
+systemctl --user start \
+    ben-bazzite-hyprland-session.target \
+    ben-bazzite-dms.service
