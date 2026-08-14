@@ -162,6 +162,8 @@ grep -Fq 'Wants=graphical-session-pre.target ben-bazzite-dms.service' \
     /usr/lib/systemd/user/ben-bazzite-hyprland-session.target
 grep -Fq 'Restart=on-failure' \
     /usr/lib/systemd/user/ben-bazzite-dms.service
+grep -Fq 'ben-bazzite-dms.service' \
+    /usr/libexec/ben-bazzite/session-start
 test -x /usr/libexec/ben-bazzite/eve-launcher-fix
 test -f /usr/share/themes/adw-gtk3-dark/index.theme
 grep -q '^org.freedesktop.impl.portal.Settings=gtk$' \
