@@ -1,0 +1,15 @@
+#!/bin/bash
+# Start the image-owned Quickshell login screen in an isolated Hyprland session.
+set -eu
+
+export HOME=/var/lib/greetd
+export XDG_CONFIG_HOME=/var/lib/greetd/.config
+export XDG_CACHE_HOME=/var/lib/greetd/.cache
+export XDG_STATE_HOME=/var/lib/greetd/.local/state
+export XDG_SESSION_TYPE=wayland
+export QT_QPA_PLATFORM=wayland
+export QT_WAYLAND_DISABLE_WINDOWDECORATION=1
+export EGL_PLATFORM=gbm
+
+exec /usr/bin/start-hyprland -- \
+    --config /usr/share/hypr/ben-bazzite-greeter.lua

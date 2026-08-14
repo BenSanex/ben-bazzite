@@ -76,7 +76,7 @@ diff --git a/Modules/Plugins/BasePill.qml b/Modules/Plugins/BasePill.qml
                  const baseColor = isHovered ? BlurService.hoverColor(Theme.widgetBaseHoverColor) : Theme.widgetBaseBackgroundColor;
  
                  if (Theme.widgetBackgroundHasAlpha) {
-@@ -171,6 +223,33 @@ Item {
+@@ -171,6 +223,60 @@ Item {
          }
      }
  
@@ -85,7 +85,9 @@ diff --git a/Modules/Plugins/BasePill.qml b/Modules/Plugins/BasePill.qml
 +            tooltipDelay.restart();
 +        } else {
 +            tooltipDelay.stop();
-+            pillTooltip.hide();
++            if (pillTooltipLoader.item)
++                pillTooltipLoader.item.hide();
++            pillTooltipLoader.active = false;
 +        }
 +    }
 +
@@ -94,17 +96,42 @@ diff --git a/Modules/Plugins/BasePill.qml b/Modules/Plugins/BasePill.qml
 +        interval: 420
 +        repeat: false
 +        onTriggered: {
-+            const side = root.axis?.edge === "bottom" ? "top" : (root.axis?.edge === "left" ? "right" : (root.axis?.edge === "right" ? "left" : "bottom"));
-+            // Keep the popup clear of the pointer. DankTooltipV2 already adds
-+            // 8 px; this directional offset makes the total gap 20 px.
-+            const offsetX = side === "left" ? -12 : (side === "right" ? 12 : 0);
-+            const offsetY = side === "top" ? -12 : (side === "bottom" ? 12 : 0);
-+            pillTooltip.show(root.currentTooltipText(), root, offsetX, offsetY, side);
++            pillTooltipLoader.active = true;
++            const tooltip = pillTooltipLoader.item;
++            if (!tooltip)
++                return;
++
++            const screen = root.parentScreen || Screen;
++            const edge = root.axis?.edge || "top";
++            // Clear the complete floating bar and leave enough breathing room
++            // that entering the icon can never put the tooltip under the pointer.
++            const clearance = Math.max(16, (root.barConfig?.bottomGap ?? 0) + Theme.spacingM);
++            const center = root.visualContent.mapToItem(null, root.visualContent.width / 2, root.visualContent.height / 2);
++            let targetX = center.x;
++            let targetY = center.y;
++            let alignLeft = false;
++            let alignRight = false;
++
++            if (edge === "left") {
++                targetX = root.barThickness + root.barSpacing + clearance;
++                alignLeft = true;
++            } else if (edge === "right") {
++                targetX = screen.width - root.barThickness - root.barSpacing - clearance;
++                alignRight = true;
++            } else if (edge === "bottom") {
++                targetY = screen.height - root.barThickness - root.barSpacing - clearance - tooltip.implicitHeight;
++            } else {
++                targetY = root.barThickness + root.barSpacing + clearance;
++            }
++
++            tooltip.show(root.currentTooltipText(), targetX, targetY, screen, alignLeft, alignRight);
 +        }
 +    }
 +
-+    DankTooltipV2 {
-+        id: pillTooltip
++    Loader {
++        id: pillTooltipLoader
++        active: false
++        sourceComponent: DankTooltip {}
 +    }
 +
      property bool _blurRegistered: false

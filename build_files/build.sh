@@ -19,6 +19,7 @@ dnf5 -y copr enable lionheartp/Hyprland
 dnf5 install -y \
     google-roboto-fonts \
     grim \
+    greetd \
     hyprland \
     hyprland-guiutils \
     hyprpaper \
@@ -44,10 +45,11 @@ dnf5 -y copr enable avengemedia/dms
 dnf5 install -y dms
 dnf5 -y copr disable avengemedia/dms
 
-# Hyprland is the only user desktop. Keep GDM as the graphical greeter and
-# retain the shared GTK, keyring, portal, and Nautilus components it relies on,
-# but discard GNOME-only accessories that are not part of the login path.
+# Hyprland is the only user desktop and the image-owned Quickshell UI is its
+# greetd login screen. Remove GDM and GNOME-only accessories while retaining
+# the shared GTK, keyring, portal, and Nautilus components used by applications.
 dnf5 remove -y \
+    gdm \
     gnome-backgrounds \
     gnome-browser-connector \
     gnome-remote-desktop \
@@ -58,12 +60,11 @@ dnf5 remove -y \
     gnome-user-share \
     nautilus-gsconnect
 
-# Fedora's GDM package depends on the GNOME session RPM even when GNOME is not
-# offered as a desktop. Remove its launcher rather than breaking the greeter.
+# Do not advertise the residual GNOME runtime as a desktop session.
 rm -f /usr/share/wayland-sessions/gnome.desktop
 
-# Add concise, live-data tooltips to every shared DMS bar pill and make the
-# hover highlight distinct from the deliberately transparent idle surface.
+# Add concise, live-data tooltips outside every shared DMS bar pill and make
+# the hover highlight distinct from the deliberately transparent idle surface.
 # Applying this as a checked patch lets upstream drift fail the build instead
 # of silently installing a partially customized shell.
 git apply \
@@ -72,12 +73,17 @@ git apply \
     /ctx/dms-tooltips.patch
 
 # Fail the image build if the Hyprland desktop, greeter, or portal is lost.
-# GNOME's shared runtime remains only where Fedora's GDM packaging requires it.
 test -x /usr/bin/start-hyprland
-test -x /usr/sbin/gdm
+test -x /usr/bin/greetd
+test ! -e /usr/bin/dms-greeter
+test ! -e /usr/sbin/gdm
 test -x /usr/bin/dms
 test -x /usr/bin/qs
 grep -Fq '"CPU " + value.toFixed(0) + "%";' \
+    /usr/share/quickshell/dms/Modules/Plugins/BasePill.qml
+grep -Fq 'sourceComponent: DankTooltip {}' \
+    /usr/share/quickshell/dms/Modules/Plugins/BasePill.qml
+grep -Fq 'const clearance = Math.max(16,' \
     /usr/share/quickshell/dms/Modules/Plugins/BasePill.qml
 grep -Fq 'item.widgetId = widgetId;' \
     /usr/share/quickshell/dms/Modules/DankBar/WidgetHost.qml
@@ -102,17 +108,12 @@ test -x /usr/bin/gnome-keyring-daemon
 # fallback config replaces Hyprland's packaged example.
 cp -avf "/ctx/system_files"/. /
 
-# Keep the greeter override in the immutable image rather than /etc, which is
-# three-way merged across bootc deployments. Put it immediately after GDM's
-# user database so it overrides both persistent and vendor Bazzite defaults.
-dconf compile \
-    /usr/share/ben-bazzite/gdm \
-    /usr/share/ben-bazzite/gdm.d
-sed -i \
-    '/^user-db:user$/a file-db:/usr/share/ben-bazzite/gdm' \
-    /usr/share/dconf/profile/gdm
+# Make greetd the sole display-manager alias in the resulting image.
+systemctl disable gdm.service 2>/dev/null || true
+systemctl enable --force greetd.service
 
 chmod 0755 \
+    /usr/bin/ben-bazzite-greeter \
     /usr/bin/ben-bazzite-hyprland-apply \
     /usr/bin/ben-bazzite-hyprland-session \
     /usr/libexec/ben-bazzite/dark-theme \
@@ -134,6 +135,15 @@ grep -Fxq 'Exec=/usr/bin/ben-bazzite-hyprland-session' \
     /usr/share/wayland-sessions/hyprland.desktop
 grep -Fq -- '--config /usr/share/hypr/hyprland.lua' \
     /usr/bin/ben-bazzite-hyprland-session
+grep -Fq -- '--config /usr/share/hypr/ben-bazzite-greeter.lua' \
+    /usr/bin/ben-bazzite-greeter
+grep -Fxq 'command = "/usr/bin/ben-bazzite-greeter"' \
+    /etc/greetd/config.toml
+grep -Fq 'import Quickshell.Services.Greetd' \
+    /etc/xdg/quickshell/ben-bazzite-greeter/shell.qml
+grep -Fq 'Greetd.launch(' \
+    /etc/xdg/quickshell/ben-bazzite-greeter/shell.qml
+test "$(systemctl is-enabled greetd.service)" = enabled
 test -f /usr/share/backgrounds/ben-bazzite/aurora-glass.png
 test -f /usr/share/backgrounds/ben-bazzite/aurora-glass-gdm.png
 test -f /usr/share/ben-bazzite/dms-theme.json
@@ -147,27 +157,17 @@ test -f /etc/xdg/ghostty/config
 test -f /etc/xdg/xdg-desktop-portal/hyprland-portals.conf
 test -f /etc/dconf/profile/user
 test -f /usr/lib/systemd/user/ben-bazzite-hyprland-session.target
+test -f /usr/lib/systemd/user/ben-bazzite-dms.service
+grep -Fq 'Wants=graphical-session-pre.target ben-bazzite-dms.service' \
+    /usr/lib/systemd/user/ben-bazzite-hyprland-session.target
+grep -Fq 'Restart=on-failure' \
+    /usr/lib/systemd/user/ben-bazzite-dms.service
 test -x /usr/libexec/ben-bazzite/eve-launcher-fix
 test -f /usr/share/themes/adw-gtk3-dark/index.theme
-test ! -e /etc/dconf/profile/gdm
-test "$(sed -n '2p' /usr/share/dconf/profile/gdm)" = \
-    'file-db:/usr/share/ben-bazzite/gdm'
-grep -Fxq 'file-db:/usr/share/gdm/greeter-dconf-defaults' \
-    /usr/share/dconf/profile/gdm
-grep -Fxq "logo='/etc/ben-bazzite/ben-os-gdm-logo.png'" \
-    /usr/share/ben-bazzite/gdm.d/00-ben-bazzite-dark
-grep -Fxq '/org/gnome/desktop/background/picture-uri' \
-    /usr/share/ben-bazzite/gdm.d/locks/00-ben-bazzite-greeter
 grep -q '^org.freedesktop.impl.portal.Settings=gtk$' \
     /etc/xdg/xdg-desktop-portal/hyprland-portals.conf
 fc-match Roboto | grep -qi 'Roboto'
 dconf update
-test "$(DCONF_PROFILE=/usr/share/dconf/profile/gdm \
-    dconf read /org/gnome/desktop/background/picture-uri)" = \
-    "'file:///usr/share/backgrounds/ben-bazzite/aurora-glass-gdm.png'"
-test "$(DCONF_PROFILE=/usr/share/dconf/profile/gdm \
-    dconf read /org/gnome/login-screen/logo)" = \
-    "'/etc/ben-bazzite/ben-os-gdm-logo.png'"
 install -d -m 0700 -o nobody -g nobody /tmp/hypr-verify
 install -d -m 0700 -o nobody -g nobody /tmp/theme-verify
 test -x /usr/bin/setpriv
@@ -187,6 +187,10 @@ setpriv --reuid=nobody --regid=nobody --clear-groups env \
     HOME=/tmp/hypr-verify \
     XDG_RUNTIME_DIR=/tmp/hypr-verify \
     Hyprland --verify-config -c /usr/share/hypr/hyprland.lua
+setpriv --reuid=nobody --regid=nobody --clear-groups env \
+    HOME=/tmp/hypr-verify \
+    XDG_RUNTIME_DIR=/tmp/hypr-verify \
+    Hyprland --verify-config -c /usr/share/hypr/ben-bazzite-greeter.lua
 XDG_CONFIG_HOME=/etc/xdg ghostty +show-config --changes-only >/dev/null
 jq -e '.name == "Ben OS Aurora" and .primary == "#6ee7fa"
     and .secondary == "#9b7bff" and .error == "#ff7a90"' \
