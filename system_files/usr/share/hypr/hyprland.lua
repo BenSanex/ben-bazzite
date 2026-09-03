@@ -169,7 +169,7 @@ end)
 
 -- Apps and session controls.
 hl.bind("SUPER + Return", hl.dsp.exec_cmd(terminal))
-hl.bind("SUPER + D", hl.dsp.exec_cmd(launcher))
+hl.bind("SUPER + SPACE", hl.dsp.exec_cmd(launcher))
 hl.bind("SUPER + E", hl.dsp.exec_cmd("env GTK_THEME=Adwaita:dark nautilus --new-window"))
 hl.bind("SUPER + F1", hl.dsp.exec_cmd("/usr/libexec/ben-bazzite/keybinds"))
 hl.bind("SUPER + A", hl.dsp.exec_cmd("dms ipc call control-center toggle"))
@@ -180,7 +180,7 @@ hl.bind("SUPER + SHIFT + E", hl.dsp.exec_cmd("dms ipc call powermenu toggle"))
 hl.bind("SUPER + SHIFT + ESCAPE", hl.dsp.exec_cmd("hyprctl dispatch exit"))
 hl.bind("SUPER + Q", hl.dsp.window.close())
 hl.bind("SUPER + F", hl.dsp.window.fullscreen({ mode = "fullscreen" }))
-hl.bind("SUPER + SPACE", hl.dsp.window.float())
+hl.bind("SUPER + D", hl.dsp.window.float())
 hl.bind("SUPER + P", hl.dsp.window.pseudo())
 -- Choose the orientation of the next split, or flip the current split.
 -- "Vertical" means a vertical divider (windows side by side).

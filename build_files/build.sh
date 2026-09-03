@@ -42,7 +42,10 @@ dnf5 -y copr disable lionheartp/Hyprland
 # and quick controls. Its stable COPR declares the matching DankLinux runtime
 # repository, so keep the single source scoped to this transaction.
 dnf5 -y copr enable avengemedia/dms
-dnf5 install -y dms
+# The initial 0.3.1 Fedora 44 Quickshell build linked against a Qt symbol that
+# the matching runtime did not export. Pin the rebuilt package and execute it
+# below so an ABI-broken greeter can never be published again.
+dnf5 install -y quickshell-0.3.1-2.fc44 dms
 dnf5 -y copr disable avengemedia/dms
 
 # Hyprland is the only user desktop and the image-owned Quickshell UI is its
@@ -79,6 +82,7 @@ test ! -e /usr/bin/dms-greeter
 test ! -e /usr/sbin/gdm
 test -x /usr/bin/dms
 test -x /usr/bin/qs
+/usr/bin/qs --version
 grep -Fq '"CPU " + value.toFixed(0) + "%";' \
     /usr/share/quickshell/dms/Modules/Plugins/BasePill.qml
 grep -Fq 'sourceComponent: DankTooltip {}' \
@@ -139,9 +143,15 @@ grep -Fq -- '--config /usr/share/hypr/ben-bazzite-greeter.lua' \
     /usr/bin/ben-bazzite-greeter
 grep -Fxq 'command = "/usr/bin/ben-bazzite-greeter"' \
     /etc/greetd/config.toml
+grep -Fxq 'ExecStartPre=/usr/bin/install -d -m 0700 -o greetd -g greetd /var/lib/greetd' \
+    /usr/lib/systemd/system/greetd.service.d/10-ben-bazzite-state.conf
 grep -Fq 'import Quickshell.Services.Greetd' \
     /etc/xdg/quickshell/ben-bazzite-greeter/shell.qml
 grep -Fq 'Greetd.launch(' \
+    /etc/xdg/quickshell/ben-bazzite-greeter/shell.qml
+grep -Fq 'readonly property string loginUsername: "bazzite"' \
+    /etc/xdg/quickshell/ben-bazzite-greeter/shell.qml
+! grep -Fq 'placeholderText: "Username"' \
     /etc/xdg/quickshell/ben-bazzite-greeter/shell.qml
 test "$(systemctl is-enabled greetd.service)" = enabled
 test -f /usr/share/backgrounds/ben-bazzite/aurora-glass.png

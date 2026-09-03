@@ -12,6 +12,7 @@ import Quickshell.Wayland
 ShellRoot {
     id: entry
 
+    readonly property string loginUsername: "bazzite"
     property string pendingPassword: ""
     property string statusText: ""
     property bool busy: false
@@ -19,9 +20,8 @@ ShellRoot {
 
     signal clearPasswordRequested
 
-    function signIn(username, password) {
-        const cleanUsername = username.trim();
-        if (!cleanUsername || !password || busy)
+    function signIn(password) {
+        if (!password || busy)
             return;
 
         if (!Greetd.available) {
@@ -37,7 +37,7 @@ ShellRoot {
         pendingPassword = password;
         statusText = "Authenticating…";
         busy = true;
-        Greetd.createSession(cleanUsername);
+        Greetd.createSession(loginUsername);
     }
 
     function resetAfterFailure(message) {
@@ -88,7 +88,7 @@ ShellRoot {
         }
 
         function onAuthFailure(message) {
-            entry.resetAfterFailure("Username or password was not accepted");
+            entry.resetAfterFailure("Password was not accepted");
         }
 
         function onError(error) {
@@ -120,7 +120,7 @@ ShellRoot {
 
             Component.onCompleted: {
                 if (isPrimary)
-                    Qt.callLater(() => usernameField.forceActiveFocus());
+                    Qt.callLater(() => passwordField.forceActiveFocus());
             }
 
             Image {
@@ -218,7 +218,7 @@ ShellRoot {
                 id: card
                 visible: window.isPrimary
                 width: Math.min(440, parent.width - 48)
-                height: 520
+                height: 460
                 anchors.centerIn: parent
                 radius: 28
                 color: "#d90b1020"
@@ -261,28 +261,6 @@ ShellRoot {
                     }
 
                     TextField {
-                        id: usernameField
-                        width: parent.width
-                        height: 54
-                        enabled: !entry.busy
-                        placeholderText: "Username"
-                        color: "#e6edf7"
-                        placeholderTextColor: "#8794b5"
-                        font.family: "Roboto"
-                        font.pixelSize: 16
-                        leftPadding: 18
-                        rightPadding: 18
-                        selectByMouse: true
-                        background: Rectangle {
-                            color: "#c4111930"
-                            radius: 14
-                            border.width: usernameField.activeFocus ? 2 : 1
-                            border.color: usernameField.activeFocus ? "#6ee7fa" : "#53657394"
-                        }
-                        onAccepted: passwordField.forceActiveFocus()
-                    }
-
-                    TextField {
                         id: passwordField
                         width: parent.width
                         height: 54
@@ -303,7 +281,7 @@ ShellRoot {
                             border.width: passwordField.activeFocus ? 2 : 1
                             border.color: passwordField.activeFocus ? "#6ee7fa" : "#53657394"
                         }
-                        onAccepted: entry.signIn(usernameField.text, passwordField.text)
+                        onAccepted: entry.signIn(passwordField.text)
                     }
 
                     Text {
@@ -322,9 +300,9 @@ ShellRoot {
                         id: signInButton
                         width: parent.width
                         height: 54
-                        enabled: !entry.busy && usernameField.text.trim() !== "" && passwordField.text !== ""
+                        enabled: !entry.busy && passwordField.text !== ""
                         text: entry.busy ? "Signing in…" : "Sign in"
-                        onClicked: entry.signIn(usernameField.text, passwordField.text)
+                        onClicked: entry.signIn(passwordField.text)
                         contentItem: Text {
                             text: parent.text
                             color: parent.enabled ? "#070b18" : "#72809f"

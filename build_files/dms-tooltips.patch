@@ -16,7 +16,7 @@ diff --git a/Modules/Plugins/BasePill.qml b/Modules/Plugins/BasePill.qml
 +    function currentTooltipText() {
 +        switch (widgetId) {
 +        case "launcherButton":
-+            return "Applications • Super+D";
++            return "Applications • Super+Space";
 +        case "focusedWindow":
 +            return "Active window";
 +        case "clock":

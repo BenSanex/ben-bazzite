@@ -8,7 +8,7 @@ Ben Bazzite is a personal, NVIDIA-focused [bootc](https://bootc-dev.github.io/bo
 ## What it includes
 
 - Hyprland as the only advertised desktop session
-- A custom greetd and Quickshell login screen instead of GDM
+- A custom greetd and Quickshell password-only login screen for the fixed `bazzite` account instead of GDM
 - DankMaterialShell (DMS) for the top bar, launcher, notifications, OSD, quick controls, and power menu
 - A supervised DMS user service that restores the shell after a crash
 - Aurora glass colors, wallpaper, GTK/Qt styling, and a matching Ghostty configuration
@@ -62,7 +62,7 @@ The complete shortcut reference is available with `Super+F1`. Common bindings in
 | Shortcut | Action |
 | --- | --- |
 | `Super+Return` | Open Ghostty |
-| `Super+D` | Open the DMS launcher |
+| `Super+Space` | Open the DMS launcher |
 | `Super+E` | Open Files |
 | `Super+A` | Open quick controls |
 | `Super+N` | Open notifications |

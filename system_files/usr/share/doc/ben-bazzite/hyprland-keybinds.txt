@@ -1,7 +1,7 @@
 BEN BAZZITE — HYPRLAND SHORTCUTS
 
 APPS
-Super + D                 App launcher
+Super + Space             App launcher
 Super + Return            Terminal
 Super + E                 Files
 Super + A                 Quick controls
@@ -12,7 +12,7 @@ Super + F1                This shortcut guide
 WINDOWS
 Super + Q                 Close window
 Super + F                 Fullscreen
-Super + Space             Toggle floating
+Super + D                 Toggle floating
 Super + P                 Toggle pseudotile
 Super + V                 Next split vertical (side by side)
 Super + H                 Next split horizontal (top/bottom)
