@@ -156,6 +156,8 @@ grep -Fq 'Greetd.launch(' \
     /etc/xdg/quickshell/ben-bazzite-greeter/shell.qml
 grep -Fq 'readonly property string loginUsername: "bazzite"' \
     /etc/xdg/quickshell/ben-bazzite-greeter/shell.qml
+grep -Fq 'id: autoSubmitTimer' \
+    /etc/xdg/quickshell/ben-bazzite-greeter/shell.qml
 ! grep -Fq 'placeholderText: "Username"' \
     /etc/xdg/quickshell/ben-bazzite-greeter/shell.qml
 test "$(systemctl is-enabled greetd.service)" = enabled

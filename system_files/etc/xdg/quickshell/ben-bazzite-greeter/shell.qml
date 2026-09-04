@@ -281,7 +281,22 @@ ShellRoot {
                             border.width: passwordField.activeFocus ? 2 : 1
                             border.color: passwordField.activeFocus ? "#6ee7fa" : "#53657394"
                         }
-                        onAccepted: entry.signIn(passwordField.text)
+                        onTextEdited: {
+                            if (passwordField.text !== "" && !entry.busy)
+                                autoSubmitTimer.restart();
+                            else
+                                autoSubmitTimer.stop();
+                        }
+                        onAccepted: {
+                            autoSubmitTimer.stop();
+                            entry.signIn(passwordField.text);
+                        }
+                    }
+
+                    Timer {
+                        id: autoSubmitTimer
+                        interval: 150
+                        onTriggered: entry.signIn(passwordField.text)
                     }
 
                     Text {
@@ -302,7 +317,10 @@ ShellRoot {
                         height: 54
                         enabled: !entry.busy && passwordField.text !== ""
                         text: entry.busy ? "Signing in…" : "Sign in"
-                        onClicked: entry.signIn(passwordField.text)
+                        onClicked: {
+                            autoSubmitTimer.stop();
+                            entry.signIn(passwordField.text);
+                        }
                         contentItem: Text {
                             text: parent.text
                             color: parent.enabled ? "#070b18" : "#72809f"
