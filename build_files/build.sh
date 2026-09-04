@@ -42,9 +42,13 @@ dnf5 -y copr disable lionheartp/Hyprland
 # and quick controls. Its stable COPR declares the matching DankLinux runtime
 # repository, so keep the single source scoped to this transaction.
 dnf5 -y copr enable avengemedia/dms
-# The initial 0.3.1 Fedora 44 Quickshell build linked against a Qt symbol that
-# the matching runtime did not export. Pin the rebuilt package and execute it
-# below so an ABI-broken greeter can never be published again.
+# Quickshell uses Qt's private API, so update the complete installed Qt stack
+# together before adding it. A mixed Qt runtime can satisfy RPM dependencies
+# while still failing at load time with an undefined symbol.
+dnf5 upgrade -y 'qt6-*'
+
+# Pin the repaired Fedora 44 build and execute it below so an ABI-broken
+# greeter can never be published again.
 dnf5 install -y quickshell-0.3.1-2.fc44 dms
 dnf5 -y copr disable avengemedia/dms
 
@@ -82,6 +86,7 @@ test ! -e /usr/bin/dms-greeter
 test ! -e /usr/sbin/gdm
 test -x /usr/bin/dms
 test -x /usr/bin/qs
+rpm -q qt6-qtbase qt6-qtdeclarative qt6-qtwayland quickshell
 /usr/bin/qs --version
 grep -Fq '"CPU " + value.toFixed(0) + "%";' \
     /usr/share/quickshell/dms/Modules/Plugins/BasePill.qml
